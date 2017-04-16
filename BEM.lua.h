@@ -1,0 +1,13 @@
+double X0, X1, Y0, Y1, Z0, Z1;
+int nX, nY, nZ;
+typedef struct D3world D3world;
+D3world* new_world(const char* file, double tol, int maxit, int numMom, int numLev, double spaceunit, int segmentation);
+void del_world(D3world* wr);
+bool load_dxf(D3world* wr, const char* file, int N);
+bool load_csv(D3world* wr, const char* file, char delimeter);
+void solve(D3world* wr);
+void region(D3world* wr, double x0, double x1, int nx, double y0, double y1, int ny, double z0, double z1, int nz);
+void region_slow(D3world* wr, double x0, double x1, int nx, double y0, double y1, int ny, double z0, double z1, int nz);
+double point(D3world* wr, double x, double y, double z);
+double point_slow(D3world* wr, double x, double y, double z);
+int bem_main(int argc, char* argv[]);

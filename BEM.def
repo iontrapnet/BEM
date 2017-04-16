@@ -1,0 +1,12 @@
+LIBRARY BEM.dll
+EXPORTS
+bem_main
+del_world
+load_csv
+load_dxf
+new_world
+point
+point_slow
+region
+region_slow
+solve

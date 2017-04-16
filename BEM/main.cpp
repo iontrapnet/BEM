@@ -2,18 +2,20 @@
 
 using namespace std;
 
-static double X0 = -1, X1 = 1, Y0 = -1, Y1 = 1, Z0 = -1, Z1 = 1;
-static int nX = 20, nY = 20, nZ = 20;
+#define API extern "C" __declspec(dllexport)
 
-D3world* new_world(const char* file, double tol = 0.00001, int maxit = 32, int numMom = 4, int numLev = 6, double spaceunit = 0.001, int segmentation = 1000) {
+API double X0 = -1, X1 = 1, Y0 = -1, Y1 = 1, Z0 = -1, Z1 = 1;
+API int nX = 20, nY = 20, nZ = 20;
+
+API D3world* new_world(const char* file, double tol = 0.00001, int maxit = 32, int numMom = 4, int numLev = 6, double spaceunit = 0.001, int segmentation = 1000) {
 	return new D3world(file, tol, maxit, numMom, numLev, spaceunit, segmentation);
 }
 
-void del_world(D3world* wr) {
+API void del_world(D3world* wr) {
 	delete wr;
 }
 
-bool load_dxf(D3world* wr, const char* file, int N) {
+API bool load_dxf(D3world* wr, const char* file, int N) {
 	D3ImportedElectrodes *impel = new D3ImportedElectrodes();
 	if(!impel->Import(file)) return false;
 
@@ -27,7 +29,7 @@ bool load_dxf(D3world* wr, const char* file, int N) {
 	return true;
 }
 
-bool load_csv(D3world* wr, const char* file, char delimeter = ',') {
+API bool load_csv(D3world* wr, const char* file, char delimeter = ',') {
 	ifstream fin(file);
 	vector< vector<string> > rows;
 	vector<string> row;
@@ -107,34 +109,32 @@ bool load_csv(D3world* wr, const char* file, char delimeter = ',') {
 	return true;
 }
 
-void solve(D3world* wr) {
+API void solve(D3world* wr) {
 	wr->correctNorm(0, 0, 0);
 	wr->solve();
 }
 
-void region(D3world* wr, double x0, double x1, int nx, double y0, double y1, int ny, double z0, double z1, int nz) {
+API void region(D3world* wr, double x0, double x1, int nx, double y0, double y1, int ny, double z0, double z1, int nz) {
 	wr->calc(x0,x1,nx,y0,y1,ny,z0,z1,nz);
 }
 
-void region_slow(D3world* wr, double x0, double x1, int nx, double y0, double y1, int ny, double z0, double z1, int nz) {
+API void region_slow(D3world* wr, double x0, double x1, int nx, double y0, double y1, int ny, double z0, double z1, int nz) {
 	wr->calc_slow(x0,x1,nx,y0,y1,ny,z0,z1,nz);
 }
 
-double point(D3world* wr, double x, double y, double z) {
+API double point(D3world* wr, double x, double y, double z) {
 	return wr->calc(x, y, z);
 }
 
-double point_slow(D3world* wr, double x, double y, double z) {
+API double point_slow(D3world* wr, double x, double y, double z) {
 	return wr->calc_slow(x, y, z);
 }
 
-//int linearPaulTrap(int argc, char* argv[]);
-//int ringTrap(int argc, char* argv[]);
-
+#ifdef _WINDLL
+API int bem_main(int argc, char* argv[]) {
+#else
 int main(int argc, char* argv[]) {
-	//linearPaulTrap(argc, argv);
-	//ringTrap(argc, argv);
-
+#endif
 	if (argc < 2) return -1;
 	char *path, *base, *ext;
 	path = new char[strlen(argv[1]) + 1];
@@ -152,8 +152,10 @@ int main(int argc, char* argv[]) {
 	D3world* wr = new_world(base, 0.000001, 64, 6, 6, 0.001, 1000);
 	if (strcmp(ext, "csv") == 0)
 		load_csv(wr, argv[1]);
-	else if (strcmp(ext, "dxf") == 0 && argc > 2)
+	else if (strcmp(ext, "dxf") == 0) {
+		if (argc < 3) return -1;
 		load_dxf(wr, argv[1], atoi(argv[2]));
+	}
 	solve(wr);
 	region(wr,X0,X1,nX,Y0,Y1,nY,Z0,Z1,nZ);
 	//region_slow(wr,X0,X1,nX,Y0,Y1,nY,Z0,Z1,nZ);
