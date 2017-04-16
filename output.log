@@ -1,0 +1,57 @@
+-------------------------------------------------------------------------------
+ Program:   3D_Potential_CHBIE_FMM, V. 2.0.1, Updated January 13, 2014         
+            An adaptive fast multiplole BEM code for general 3-D potential     
+            problems based on the dual boundary integral equation formulation. 
+ All Rights Reserved, 2006-2014 (For education and research use only).         
+ Developer: CAE Research Lab, University of Cincinnati, Ohio, USA.             
+ Download:  http://urbana.mie.uc.edu/yliu/Software/.                           
+ Contact:   Dr. Yijun Liu;  Tel.: 1 (513) 556-4607;  E-mail: Yijun.Liu@uc.edu. 
+-------------------------------------------------------------------------------
+ 
+4rod                                                                            
+  Number of elements                 =       16252
+  Number of nodes                    =        8138
+  Number of field points             =           0
+  Coupling constant alpha, beta      =   0.100D+01  -0.100D+01
+ 
+  Max. number of elements in a leaf  =         100
+  Number of terms used in expansions =          10
+  Tolerance for convergence          =   0.100D-03
+ 
+  number of tree levels              =           2
+  number of leaves                   =         216
+  number of cells                    =         245
+ 
+  Store coefficients from direct evaluations for reuse
+  Total memory usage is about:      1445.8 MB
+
+  Calculating right-hand side b vector ......
+  CPU for computing the b vector =   5.82812500000000      (sec)
+ Generalized Minimum Residual(***  0) for N, ITOL =    15   15
+ ITER   Natural Err Est   Error Estimate
+    0    0.1000000D+01    0.1000000D+01
+    1    0.8210050D+00    0.8210050D+00
+    2    0.6900265D+00    0.6900265D+00
+    3    0.5606650D+00    0.5606650D+00
+    4    0.2738793D+00    0.2738793D+00
+    5    0.1454541D+00    0.1454541D+00
+    6    0.8038164D-01    0.8038164D-01
+    7    0.5583754D-01    0.5583754D-01
+    8    0.3148903D-01    0.3148903D-01
+    9    0.1705150D-01    0.1705150D-01
+   10    0.9772879D-02    0.9772879D-02
+   11    0.5142684D-02    0.5142684D-02
+   12    0.3334019D-02    0.3334019D-02
+   13    0.1984753D-02    0.1984753D-02
+   14    0.1041460D-02    0.1041460D-02
+   15    0.5432710D-03    0.5432710D-03
+   15    0.5432710D-03    0.5432710D-03
+   16    0.2987641D-03    0.2987641D-03
+   17    0.2124135D-03    0.2124135D-03
+   18    0.1466760D-03    0.1466760D-03
+   19    0.9312008D-04    0.9312008D-04
+  Error indicator from GMRES:           0
+ Open 'output.plt' to view the model and result plots with tecplot
+ 
+ 
+ Total CPU time, wall-clock time used =     45.19 (sec),     18.72 (sec)
