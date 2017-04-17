@@ -62,6 +62,31 @@ using namespace std;
 #ifndef _TIME_			/* if not on a Sun4 */
 #include <time.h>
 #endif
+
+/* Types of Problems. */
+#define FIELD 0                 /* fastlap should only do a field computation.
+This is equivalent to computing a RHS.*/
+#define GREEN 1                 /* fastlap should solve a linear system with
+both right- and left-hand side matrices
+as in a Green formulation.*/
+#define INDIRECT 2              /* fastlap should solve a linear system with
+a left-hand side matrix and a right-hand
+side vector as in a single- or double-
+layer formulation.*/
+
+/* Shapes of singularities. */
+#define POINT 1                 /* Indicates snglrty geometry is a point. */
+#define TRIANGLE 3              /* Indicates snglrty geometry is a triangle. */
+#define QUADRILAT 4             /* Indicates snglrty geometry is a 
+quadrilateral. */
+
+/* Types of singularities. */
+#define POINT_SOURCE 1          /* Indicates snglrty is a point source. */
+#define CONSTANT_SOURCE 11      /* Indicates snglrty is a constant source. */
+#define CONSTANT_DIPOLE 12      /* Indicates snglrty is a constant dipole. */
+#define LINEAR_SOURCE 21        /* Indicates snglrty is a linear source. */
+#define LINEAR_DIPOLE 22        /* Indicates snglrty is a linear dipole. */
+
 #define XI 0
 #define YI 1
 #define ZI 2
@@ -73,17 +98,29 @@ using namespace std;
 #define Dot_Product(V1,V2) V1[XI]*V2[XI]+V1[YI]*V2[YI]+V1[ZI]*V2[ZI]
 #define DotP_Product(V1,R,S,T) (V1[XI])*(R)+(V1[YI])*(S)+(V1[ZI])*(T)
 
-
-
 extern "C" void Cross_Product(double vector1[],double vector2[],double result_vector[]);
 extern "C" double normalize(double vector[3]);
 extern "C" int fastlap(int *plhsSize,int *prhsSize,int *pnumSing,double *px,int *pshape,int *pdtype,
 			int *plhsType,int *prhsType,int *plhsIndex,int *prhsIndex,
 			double *plhsVect,double *prhsVect,double *pxf,double *pxnrm,int *pnumLev,int *pnumMom,
 			int *pmaxItr,double *ptol,int *pjob);
-extern "C" void main3(int,char*);
 
+typedef long int integer;
+typedef char *address;
+typedef short int shortint;
+typedef float real_;
+typedef double doublereal;
+typedef struct { real_ r, i; } complex_;
+typedef struct { doublereal r, i; } doublecomplex;
+typedef long int logical;
+typedef short int shortlogical;
+typedef char logical1;
+typedef char integer1;
+extern "C" int __cdecl DGESV(integer *n, integer *nrhs, doublereal *a, integer 
+							 *lda, integer *ipiv, doublereal *b, integer *ldb, integer *info);
 
+extern "C" void freeunusedmem();
+//void freeunusedmem() {};
 
 double *dfdnbackup;
 /*

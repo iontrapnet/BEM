@@ -42,6 +42,7 @@ local argv = {...}
 local argc = #argv
 title = 'input'
 if argc > 0 then title = argv[1] end
-local nodes = read_csv'nodes.csv'
-local elements = read_csv'elements.csv'
+local nodes = read_csv 'nodes.csv'
+local elements = read_csv 'elements.csv'
 preprocessing(nodes, elements, title)
+--os.execute '3D_Potential_CHBIE_FMM_64.exe'
