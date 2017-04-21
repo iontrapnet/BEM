@@ -8,7 +8,7 @@
  Contact:   Dr. Yijun Liu;  Tel.: 1 (513) 556-4607;  E-mail: Yijun.Liu@uc.edu. 
 -------------------------------------------------------------------------------
  
-input                                                                           
+sphere                                                                          
   Number of elements                 =         648
   Number of nodes                    =         326
   Number of field points             =           0
@@ -37,4 +37,4 @@ input
  Open 'output.plt' to view the model and result plots with tecplot
  
  
- Total CPU time, wall-clock time used =      1.25 (sec),      0.45 (sec)
+ Total CPU time, wall-clock time used =      1.83 (sec),      0.74 (sec)
