@@ -143,12 +143,13 @@ int main(int argc, char* argv[]) {
 	if (!ext || ext == path) return -1;
 	*ext = '\0';
 	++ext;
-	base = strrchr(path, '\\');
+	/*base = strrchr(path, '\\');
 	if (base) {
 		if (base != path) ++base;
 	} else {
 		base = path;
-	}
+	}*/
+	base = path;
 	D3world* wr = new_world(base, 0.000001, 64, 6, 6, 0.001, 1000);
 	if (strcmp(ext, "csv") == 0)
 		load_csv(wr, argv[1]);
