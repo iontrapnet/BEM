@@ -11,7 +11,7 @@ if argc < 1 then return -1 end
 local path = argv[1]
 --local base, ext = string.match(path, ".-([^\\]-).([^\\%.]+)$")
 local base, ext = string.match(path, "(.-).([^\\%.]+)$")
-local wr = bem.new_world(base, 0.000001, 64, 6, 6, 0.001, 1000)
+local wr = bem.new_world(base, 0.001, 64, 6, 6, 1, 1000)
 if ext == 'csv' then
     bem.load_csv(wr, path, 44)
 elseif ext == 'dxf' then

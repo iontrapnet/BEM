@@ -1,0 +1,199 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 11.0' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       158,          7]
+NotebookDataLength[      6928,        191]
+NotebookOptionsPosition[      6027,        154]
+NotebookOutlinePosition[      6414,        171]
+CellTagsIndexPosition[      6371,        168]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell[BoxData[
+ RowBox[{"Quit", "[", "]"}]], "Input",
+ CellChangeTimes->{{3.690979952937765*^9, 3.6909799546319575`*^9}}],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"SetDirectory", "@", 
+   RowBox[{"NotebookDirectory", "[", "]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"Off", "[", 
+   RowBox[{
+    RowBox[{"Part", "::", "partd"}], ",", 
+    RowBox[{"Part", "::", "pspec1"}], ",", 
+    RowBox[{"Message", "::", "name"}]}], "]"}], ";"}]}], "Input",
+ CellChangeTimes->{{3.6908482281748796`*^9, 3.6908482391002893`*^9}, {
+  3.691014596904335*^9, 3.6910146052683024`*^9}, {3.7078993437900963`*^9, 
+  3.7078993441184177`*^9}, {3.7078996137336693`*^9, 3.7078996140148993`*^9}, {
+  3.7079109357811594`*^9, 3.7079109360780687`*^9}}],
+
+Cell[CellGroupData[{
+
+Cell["Pre - load", "Section",
+ CellChangeTimes->{{3.7048519293794622`*^9, 3.7048519325840893`*^9}, 
+   3.707439224955985*^9, 3.7079110670924716`*^9},
+ ExpressionUUID -> "8c412054-0cdc-4ad1-addb-89ee9b3813cc"],
+
+Cell[CellGroupData[{
+
+Cell["PythonLink", "Subsection",
+ CellChangeTimes->{{3.6912852466158957`*^9, 3.6912852613970118`*^9}, {
+  3.7079108560470934`*^9, 3.7079108566877193`*^9}}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"Install", "[", 
+   RowBox[{"(*", 
+    RowBox[{"\"\<cmd /k \>\"", "<>"}], "*)"}], 
+   RowBox[{"\"\<python \>\"", "<>", 
+    RowBox[{"FileNameJoin", "@", 
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"NotebookDirectory", "[", "]"}], ",", "\"\<Python\>\"", ",", 
+       "\"\<PythonLink.py\>\""}], "}"}]}]}], "]"}], ";"}]], "Input",
+ InitializationCell->True,
+ CellChangeTimes->{{3.6911532812405777`*^9, 3.691153289657504*^9}, {
+   3.6911543286140175`*^9, 3.691154328913003*^9}, {3.691154455483714*^9, 
+   3.691154455983735*^9}, {3.6911545372377796`*^9, 3.6911545795124516`*^9}, {
+   3.6911546595203*^9, 3.6911546662537937`*^9}, 3.6911946482339163`*^9, 
+   3.6911949539960203`*^9, {3.691278958330598*^9, 3.6912789587908955`*^9}, {
+   3.691305195786273*^9, 3.691305197473256*^9}, {3.70444741585114*^9, 
+   3.7044474292226925`*^9}, {3.707897394458109*^9, 3.707897404630003*^9}, 
+   3.7078979326935167`*^9, {3.7079126657067575`*^9, 3.7079126933606033`*^9}}],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"Py", "[", 
+   RowBox[{"\"\<import sys\nsys.path.append('\>\"", "<>", 
+    RowBox[{"FileNameJoin", "@", 
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"NotebookDirectory", "[", "]"}], ",", "\"\<Python\>\"", ",", 
+       "\"\<IonTrajectorySimulation\>\""}], "}"}]}], "<>", "\"\<')\>\""}], 
+   "]"}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{"Py", "[", 
+  "\"\<from dynamics_simulation import dynamics_simulation\>\"", 
+  "]"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"DynamicsSimulation", "=", 
+   RowBox[{"Py", "[", "\"\<dynamics_simulation\>\"", "]"}]}], ";"}]}], "Input",
+ InitializationCell->True,
+ CellChangeTimes->{{3.7078970826736546`*^9, 3.707897089569646*^9}, {
+  3.707897912408456*^9, 3.707897926210968*^9}, {3.7078981313477345`*^9, 
+  3.7078981454771395`*^9}, {3.707899259543893*^9, 3.707899259903267*^9}, {
+  3.7079028327642655`*^9, 3.7079028331563444`*^9}, {3.707903287894584*^9, 
+  3.7079032880352182`*^9}, {3.707912708739418*^9, 3.707912709114382*^9}}],
+
+Cell[CellGroupData[{
+
+Cell["Uninstall", "Subsubsection",
+ CellChangeTimes->{{3.7079093276395082`*^9, 3.7079093325544753`*^9}}],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"Uninstall", "@", 
+   RowBox[{"Last", "@", 
+    RowBox[{"Links", "[", "\"\<*PythonLink.py*\>\"", "]"}]}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"LinkClose", "/@", 
+   RowBox[{"Links", "[", "\"\<*PythonLink.py*\>\"", "]"}]}], ";"}]}], "Input",
+ CellChangeTimes->{{3.691307412501192*^9, 3.691307416850932*^9}, 
+   3.7044475363889194`*^9}]
+}, Closed]]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Dynamics Simulation", "Section",
+ CellChangeTimes->{{3.7079108715371246`*^9, 3.7079108799755116`*^9}}],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"DynamicsSimulation", "@", 
+  RowBox[{"{", 
+   RowBox[{"0", ",", 
+    RowBox[{"{", 
+     RowBox[{"0.0001", ",", "0", ",", "0"}], "}"}]}], "}"}]}]], "Input",
+ CellChangeTimes->{{3.7078974695175877`*^9, 3.7078975050975275`*^9}, {
+   3.7078982263682785`*^9, 3.707898293968749*^9}, {3.7078983364979796`*^9, 
+   3.7078983440448747`*^9}, {3.707898389187714*^9, 3.707898401280304*^9}, {
+   3.707898504520373*^9, 3.7078985103595314`*^9}, {3.707898803376163*^9, 
+   3.7078988051574216`*^9}, {3.70789909137139*^9, 3.707899091684063*^9}, 
+   3.7079033074253297`*^9}],
+
+Cell[BoxData["\<\"[array([[[[  4.88584960e-06,  -2.96792252e-06,   \
+1.05825794e-06],\\n         [  4.88584960e-06,  -2.96792252e-06,   \
+1.05825794e-06],\\n         [  4.88258305e-06,  -2.96990732e-06,   \
+1.05825775e-06],\\n         ..., \\n         [  4.80452552e-06,  \
+-1.38258673e-06,   1.05825682e-06],\\n         [  4.80208683e-06,  \
+-1.35750254e-06,   1.05825738e-06],\\n         [  4.79641890e-06,  \
+-1.33333146e-06,   1.05825775e-06]]]]), array([[[0],\\n        [0],\\n        \
+[0],\\n        ..., \\n        [0],\\n        [0],\\n        [0]]], \
+dtype=uint8), array([[  0.00000000e+00,   3.33333333e-04,   6.66666667e-04, \
+...,\\n          9.99990000e+01,   9.99993333e+01,   \
+9.99996667e+01]])]\"\>"], "Output",
+ CellChangeTimes->{{3.7078987513844786`*^9, 3.707898806344714*^9}, 
+   3.707899096827627*^9, 3.7078992340055494`*^9, 3.707899270095905*^9, {
+   3.7079028140723505`*^9, 3.707902852113529*^9}, 3.7079033117230377`*^9, 
+   3.7079126460730457`*^9, 3.7079127221204658`*^9}]
+}, Open  ]]
+}, Open  ]]
+},
+WindowSize->{759, 821},
+WindowMargins->{{Automatic, 320}, {53, Automatic}},
+Magnification:>1.1 Inherited,
+FrontEndVersion->"11.0 for Microsoft Windows (64-bit) (2016\:5e747\:670828\
+\:65e5)",
+StyleDefinitions->"Default.nb"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[558, 20, 120, 2, 33, "Input"],
+Cell[681, 24, 608, 13, 56, "Input"],
+Cell[CellGroupData[{
+Cell[1314, 41, 208, 3, 78, "Section"],
+Cell[CellGroupData[{
+Cell[1547, 48, 155, 2, 53, "Subsection"],
+Cell[1705, 52, 989, 19, 96, "Input",
+ InitializationCell->True],
+Cell[2697, 73, 1008, 21, 162, "Input",
+ InitializationCell->True],
+Cell[CellGroupData[{
+Cell[3730, 98, 104, 1, 43, "Subsubsection"],
+Cell[3837, 101, 389, 10, 67, "Input"]
+}, Closed]]
+}, Open  ]]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[4287, 118, 108, 1, 78, "Section"],
+Cell[CellGroupData[{
+Cell[4420, 123, 578, 11, 33, "Input"],
+Cell[5001, 136, 998, 14, 364, "Output"]
+}, Open  ]]
+}, Open  ]]
+}
+]
+*)
+
