@@ -5,9 +5,9 @@ using namespace std;
 #define API extern "C" __declspec(dllexport)
 
 API double X0 = -1, X1 = 1, Y0 = -1, Y1 = 1, Z0 = -1, Z1 = 1;
-API int nX = 20, nY = 20, nZ = 20;
+API int Xn = 20, Yn = 20, Zn = 20;
 
-API D3world* new_world(const char* file, double tol = 0.00001, int maxit = 32, int numMom = 4, int numLev = 6, double spaceunit = 0.001, int segmentation = 1000) {
+API D3world* new_world(const char* file, double tol = 0.01, int maxit = 32, int numMom = 4, int numLev = 6, double spaceunit = 1, int segmentation = 1000) {
 	return new D3world(file, tol, maxit, numMom, numLev, spaceunit, segmentation);
 }
 
@@ -102,9 +102,9 @@ API bool load_csv(D3world* wr, const char* file, char delimeter = ',') {
 		Z0 = -Z0;
 	}
 	if (iter != rows.end()) {
-		nX = atoi((*iter)[0].c_str());
-		nY = atoi((*iter)[1].c_str());
-		nZ = atoi((*iter)[2].c_str());
+		Xn = atoi((*iter)[0].c_str());
+		Yn = atoi((*iter)[1].c_str());
+		Zn = atoi((*iter)[2].c_str());
 	}
 	return true;
 }
@@ -114,12 +114,12 @@ API void solve(D3world* wr) {
 	wr->solve();
 }
 
-API void region(D3world* wr, double x0, double x1, int nx, double y0, double y1, int ny, double z0, double z1, int nz) {
-	wr->calc(x0,x1,nx,y0,y1,ny,z0,z1,nz);
+API void region(D3world* wr, double x0, double x1, int xn, double y0, double y1, int yn, double z0, double z1, int zn) {
+	wr->calc(x0, x1, xn+1, y0, y1, yn+1, z0, z1, zn+1);
 }
 
-API void region_slow(D3world* wr, double x0, double x1, int nx, double y0, double y1, int ny, double z0, double z1, int nz) {
-	wr->calc_slow(x0,x1,nx,y0,y1,ny,z0,z1,nz);
+API void region_slow(D3world* wr, double x0, double x1, int xn, double y0, double y1, int yn, double z0, double z1, int zn) {
+	wr->calc_slow(x0, x1, xn+1, y0, y1, yn+1, z0, z1, zn+1);
 }
 
 API double point(D3world* wr, double x, double y, double z) {
@@ -158,8 +158,8 @@ int main(int argc, char* argv[]) {
 		load_dxf(wr, argv[1], atoi(argv[2]));
 	}
 	solve(wr);
-	region(wr,X0,X1,nX,Y0,Y1,nY,Z0,Z1,nZ);
-	//region_slow(wr,X0,X1,nX,Y0,Y1,nY,Z0,Z1,nZ);
+	region(wr,X0,X1,Xn,Y0,Y1,Yn,Z0,Z1,Zn);
+	//region_slow(wr,X0,X1,Xn,Y0,Y1,Yn,Z0,Z1,Zn);
 	del_world(wr);
 	return 0;
 }

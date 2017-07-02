@@ -25,8 +25,8 @@ local Y0 = bem.Y0
 local Y1 = bem.Y1
 local Z0 = bem.Z0
 local Z1 = bem.Z1
-local nX = bem.nX
-local nY = bem.nY
-local nZ = bem.nZ
-bem.region(wr, X0, X1, nX, Y0, Y1, nY, Z0, Z1, nZ)
+local Xn = bem.Xn
+local Yn = bem.Yn
+local Zn = bem.Zn
+bem.region(wr, X0, X1, Xn, Y0, Y1, Yn, Z0, Z1, Zn)
 bem.del_world(wr)
