@@ -1,0 +1,10 @@
+function FieldInit(path, varargin)
+    global cb xr yr zr pb
+    cb = ChargeBasis(path);
+    if nargin == 4
+        xr = varargin{1};
+        yr = varargin{2};
+        zr = varargin{3};
+        pb = PotentialBasis(path, xr, yr, zr);
+    end
+end
