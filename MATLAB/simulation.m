@@ -1,11 +1,10 @@
 clear;
 clc
-global path xr yr zr pb
 path='..\\Model\\4rod\\167634622912717531';
 xr=[-0.01 0.01 10];
 yr=[-0.01 0.01 10];
 zr=[2.05 2.15 10];
-pb=PotentialBasis(path,xr,yr,zr);
+FieldInit(path, xr, yr, zr);
 %%%%%%%%%%%%%%%%%%%%%%%% Definition %%%%%%%%%%%%%%%%%%%%%%%%%
 e = 1.6021766 * 10^-19;
 m = 2.87363 * 10^-25;                    %Yb+离子质量
@@ -13,7 +12,7 @@ n_ions = 2;                              %ions number
 Q_ion = 1 * e;                           %Yb+(ODEfun中也有)
 lam = 369.5 * 10^-9;                     %cooling beam
 kB = 1.38065 * 10^-23;                   %Boltzmann constant
-T_total = 0.02;                           %time of simulation
+T_total = 0.03;                           %time of simulation
 d0 = 500;
 d1 = 1000;
 r0 = 1e-6*(d1 / sqrt(2) - d0 / 2);

@@ -6,5 +6,7 @@ function FieldInit(path, varargin)
         yr = varargin{2};
         zr = varargin{3};
         pb = PotentialBasis(path, xr, yr, zr);
+    else
+        pb = 0;
     end
 end

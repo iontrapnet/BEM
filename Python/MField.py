@@ -22,13 +22,9 @@ def MFieldInit(path, xr=[], yr=[], zr=[]):
 	else:
 		eng.FieldInit(path,nargout=0)
 
-def MField(voltages, points, method='Calc'):
+def MField(voltages, points):
 	global eng
-	if method == 'Calc':
-		func = eng.FieldCalc
-	else:
-		func = eng.FieldInterp
-	return func(matlab.double(voltages), matlab.double(points))
+	return eng.Field(matlab.double(voltages), matlab.double(points))
 
 if __name__ == '__main__':
 	MStart()
@@ -36,4 +32,4 @@ if __name__ == '__main__':
 	MFieldInit(PATH_SPHERE)
 	print MField([1],points)
 	MFieldInit(PATH_SPHERE,[-2,2,40],[-2,2,40],[-2,2,40])
-	print MField([1],points,method='Interp')
+	print MField([1],points)
