@@ -8,7 +8,7 @@ from equilbrium_positions import equilibrium_positions as equil
 from matplotlib import pyplot
 import os
 
-os.chdir(os.path.dirname(__file__))
+#os.chdir(os.path.dirname(__file__))
 def dynamics_simulation(configuration):
     '''
     The function requires a parameter configuration, which is a list or numpy array
