@@ -34,10 +34,10 @@ class simulation_parameters(object):
         # simulation parameter
         self.damping = 0  # optional velocity damping, useful for finding equlibrium positions
         self.simulation_duration = 0.001  # seconds
-        self.timestep = (1 / self.f_drive) / 100  # seconds
+        self.timestep = (1 / self.f_drive) / 1000  # seconds
         # cooling laser
-        self.cooling_on = False
-        self.cooling_saturation = 0
+        self.cooling_on = True
+        self.cooling_saturation = 3
         self.cooling_laser_detuning = -.5 * self.transition_gamma
         self.cooling_laser_direction = np.array([1., 1., 1.])
         self.cooling_laser_direction = self.cooling_laser_direction / \
