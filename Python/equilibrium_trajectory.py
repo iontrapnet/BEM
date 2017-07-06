@@ -16,7 +16,7 @@ omega_rf = 2 * np.pi * 25e6
 # We can start from gamma0 = 1 and repeat.
 # Once the shift converges to a small value,
 # we can reduce gamma0 by one order of magnitude and repeat again.
-gamma0 = 10
+gamma0 = 1
 # for a stable solution, it seems it surfices to have T/step~0.01
 step = 100000
 T = 300 * 2 * np.pi / omega_rf

@@ -12,7 +12,7 @@ n_ions = 2;                              %ions number
 Q_ion = 1 * e;                           %Yb+(ODEfun÷–“≤”–)
 lam = 369.5e-9;                          %cooling beam
 kB = 1.38065e-23;                        %Boltzmann constant
-T_total = 1e-7;                          %time of simulation
+T_total = 1e-5;                          %time of simulation
 d0 = 500e-6;
 d1 = 1000e-6;
 r0 = (d1 / sqrt(2) - d0 / 2);
@@ -38,7 +38,7 @@ pos_vel = zeros(6 * n_ions, n_T + 1);
 pos_vel(:, 1) = ini;
 kt = zeros(6 * n_ions, 1);
 for count = 1:n_T
-    count
+    %count
     kt = Eulerfun((count - 1) * dt, pos_vel(:, count));
     pos_vel(:, count + 1) = pos_vel(:, count) + dt * kt;
 end
