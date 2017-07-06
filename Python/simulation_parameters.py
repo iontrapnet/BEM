@@ -24,7 +24,7 @@ class simulation_parameters(object):
         self.field_type = 1
         if self.field_type == 1:
             self.f_drive = 12.0 * 10**6
-            self.u_ac = 200
+            self.u_ac = 500
             self.u_dc = 30
             self.q_coeff = 1.6021766e-19 * 10**2
             MFieldInit('..\\Model\\4rod\\167634622912717531',[-5e-5,5e-5,100],[-5e-5,5e-5,100],[-5e-5,5e-5,100],'5d49bb9d6704e98ea598bb82a952b646')
