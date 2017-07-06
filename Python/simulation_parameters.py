@@ -1,6 +1,6 @@
 from __future__ import division
 import numpy as np
-
+from MField import MFieldInit
 
 class simulation_parameters(object):
 
@@ -10,10 +10,22 @@ class simulation_parameters(object):
         # trap frequencies
         self.f_drive = 30.0 * 10**6  # Hz
         self.f_x = 4.0 * 10**6  # Hz
-        self.f_y = 3.0 * 10**6  # Hz
+        self.f_y = 3.0 * 10**6  # Hzfield_type
         self.f_z = 0.2 * 10**6  # Hz
-        self.use_harmonic_approximation = False
-        # simulation parameters
+        self.field_type = 1
+        if self.field_type == 1:
+            MFieldInit(
+                '..\\Model\\4rod\\167634622912717531', 
+                [-0.005,0.005,100], 
+                [-0.005,0.005,100], 
+                [2.095,2.105,100], 
+                '5d49bb9d6704e98ea598bb82a952b646'
+                )
+            self.f_drive = 12.0 * 10**6
+            self.u_ac = 500
+            self.u_dc = 30
+            self.q_coeff = 1e2 * 1.6021766e-19
+        # simulation parameter
         self.damping = 0  # optional velocity damping, useful for finding equlibrium positions
         self.simulation_duration = 0.002  # seconds
         self.timestep = (1 / self.f_drive) / 100  # seconds

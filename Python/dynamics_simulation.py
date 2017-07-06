@@ -225,8 +225,8 @@ def dynamics_simulation(configuration):
 , label='z')
             pyplot.grid(True, which='both')
             pyplot.legend()
-            filename = os.path.join('..', "ion " + str(num + 1) + \
-                " in operation " + str(order) + ".png")
+            filename = "ion " + str(num + 1) + \
+                " in operation " + str(order) + ".png"
             pyplot.savefig(filename, dpi=100)
     pyplot.show()
     positions = np.array(positions)

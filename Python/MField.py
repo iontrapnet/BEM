@@ -11,7 +11,7 @@ MSession = {}
 def MEngine(*args):
     if not MSession.get('eng', None):
         eng = matlab.engine.start_matlab(*args)
-        eng.cd('../MATLAB')
+        eng.cd(os.path.join(os.path.dirname(__file__), '..', 'MATLAB'))
         MSession['eng'] = eng
     return MSession['eng']
 
@@ -22,7 +22,7 @@ def MFieldInit(path, xr=[], yr=[], zr=[], data=''):
         MSession['zr'] = zr
         if not data:
             data = MEngine().DataHash(matlab.double(xr+yr+zr))
-        matfile = path + '-' + data + '.mat'
+        matfile = os.path.join(os.path.dirname(__file__), path + '-' + data + '.mat')
         if not os.path.exists(matfile):
             MEngine().FieldInit(path,matlab.double(xr),matlab.double(yr),matlab.double(zr))
         pb = loadmat(matfile)['pb']
@@ -72,22 +72,24 @@ def EqualRangeInterpolation(point, xr, yr, zr, *args):
         return r[0]
     return r
 
-def MField(voltages, points):
+def MField(voltages, points, ratio=1):
     pb = MSession['pb']
     if np.ndim(pb) == 0:
         return MEngine().Field(matlab.double(voltages), matlab.double(points))
     else:
-        pb = np.dot(voltages,pb)
+        pb = ratio*np.dot(pb,voltages)
         xr = MSession['xr']
         yr = MSession['yr']
         zr = MSession['zr']
         return [EqualRangeInterpolation(point, xr, yr, zr, pb[1,:], pb[2,:], pb[3,:]) for point in points]
 
 if __name__ == '__main__':
-    points = [[0,0,0],[0,-1,-2],[1,1,1]]
-    MFieldInit(PATH_SPHERE,[-2,2,40],[-2,2,40],[-2,2,40],'7a5fb13c63c4d748307ca9824e34bdd7')
-    print MField([1],points)
-    MFieldInit(PATH_SPHERE,[-2,2,40],[-2,2,40],[-2,2,40])
-    print MField([1],points)
-    MFieldInit(PATH_SPHERE)
-    print MField([1],points)
+    #points = [[0,0,0],[0,-1,-2],[1,1,1]]
+    #MFieldInit(PATH_SPHERE,[-2,2,40],[-2,2,40],[-2,2,40],'7a5fb13c63c4d748307ca9824e34bdd7')
+    #print MField([1],points)
+    #MFieldInit(PATH_SPHERE,[-2,2,40],[-2,2,40],[-2,2,40])
+    #print MField([1],points)
+    #MFieldInit(PATH_SPHERE)
+    #print MField([1],points)
+    MFieldInit(PATH_4ROD,[-0.005,0.005,100], [-0.005,0.005,100], [2.095,2.105,100], '5d49bb9d6704e98ea598bb82a952b646')
+    MField([1,0,0,0,0,1],[[0,0,2.0999],[0,0,2.0101]])
