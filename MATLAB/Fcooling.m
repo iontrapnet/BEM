@@ -1,7 +1,7 @@
 function [Fcx, Fcy, Fcz] = Fcooling(vx, vy, vz)
-lam = 369.5 * 10^-9;                     % cooling beam
-hbar = 6.626070 * 10^-34;
-decay = 2 * pi * 19.7 *10^6;             %decay rate
+lam = 369.5e-9;                     % cooling beam
+hbar = 6.626070e-34;
+decay = 2 * pi * 19.7e6;             %decay rate
 detuning = -2 * decay;
 rabi = decay / sqrt(2);                  %´ý¶¨
 s = 2 * abs(rabi)^2 / decay^2;    %saturation paramater
