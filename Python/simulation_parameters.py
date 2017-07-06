@@ -6,8 +6,9 @@ class simulation_parameters(object):
 
     def __init__(self):
 
-        self.number_ions = 1
+        self.number_ions = 2
         # ion parameters
+        self.charge_unit = 1.6021766e-19
         self.atomic_unit = 1.6605402e-27
         self.mass = 171 * 1.6605402e-27  # 171 amu in kg
         # k =  U.e**2 / (4.0 * U.pi * U.eps0)
@@ -25,8 +26,10 @@ class simulation_parameters(object):
         if self.field_type == 1:
             self.f_drive = 12.0 * 10**6
             self.u_ac = 500
-            self.u_dc = 30
-            self.q_coeff = 1.6021766e-19 * 10**2
+            self.u_dc = 100
+            self.dc_z = 0.122321 * 10**4
+            self.f_z = (2 * self.dc_z * self.charge_unit * self.u_dc / self.mass)**.5 / (2 * np.pi)
+            self.q_coeff = self.charge_unit * 10**2
             MFieldInit('..\\Model\\4rod\\167634622912717531',[-5e-5,5e-5,100],[-5e-5,5e-5,100],[-5e-5,5e-5,100],'5d49bb9d6704e98ea598bb82a952b646')
         # simulation parameter
         self.damping = 0  # optional velocity damping, useful for finding equlibrium positions
