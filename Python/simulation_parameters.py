@@ -14,13 +14,13 @@ class simulation_parameters(object):
         # k =  U.e**2 / (4.0 * U.pi * U.eps0)
         self.coulomb_coeff = 2.30707955552e-28
         self.hbar = 1.05457266913e-34
-        self.transition_gamma = (1 / (7.1 * 10**-9))  # Gamma = 1 / Tau
+        self.transition_gamma = (1 / (8.07 * 10**-9))  # Gamma = 1 / Tau
         self.wavelength = 369.5 * 10**-9
         self.transition_k_mag = 2 * np.pi / self.wavelength
         # trap frequencies
         self.f_drive = 30.0 * 10**6  # Hz
         self.f_x = 4.0 * 10**6  # Hz
-        self.f_y = 3.0 * 10**6  # Hzfield_type
+        self.f_y = 3.0 * 10**6  # Hz
         self.f_z = 0.2 * 10**6  # Hz
         self.field_type = 1
         if self.field_type == 1:
@@ -34,10 +34,10 @@ class simulation_parameters(object):
         # simulation parameter
         self.damping = 0  # optional velocity damping, useful for finding equlibrium positions
         self.simulation_duration = 0.001  # seconds
-        self.timestep = (1 / self.f_drive) / 100  # seconds
+        self.timestep = (1 / self.f_drive) / 1000  # seconds
         # cooling laser
-        self.cooling_on = False
-        self.cooling_saturation = 0
+        self.cooling_on = True
+        self.cooling_saturation = 0.8
         self.cooling_laser_detuning = -.5 * self.transition_gamma
         self.cooling_laser_direction = np.array([1., 1., 1.])
         self.cooling_laser_direction = self.cooling_laser_direction / \
