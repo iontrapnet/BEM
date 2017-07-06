@@ -102,7 +102,9 @@ cdef class simulator(object):
             ve = [self.U_DC, u_ac, 0, u_ac, 0, self.U_DC]
             acce = MField(ve, position, self.Q_COEFF / self.MASS)
             for i in range(self.NUMBER_IONS):
-                current_acceleration[i, :] = acce[i]
+                current_acceleration[i, 0] = acce[i][0]
+                current_acceleration[i, 1] = acce[i][1]
+                current_acceleration[i, 2] = acce[i][2]
         elif self.FIELD_TYPE == 2:
             for i in range(self.NUMBER_IONS):
                 current_acceleration[i, 0] = ((1 / 2.) * (-self.W_X**2 + self.W_Y**2 + self.W_Z**2) - self.W_DRIVE * sqrt(

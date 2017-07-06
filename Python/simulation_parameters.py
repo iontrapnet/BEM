@@ -12,7 +12,7 @@ class simulation_parameters(object):
         self.f_x = 4.0 * 10**6  # Hz
         self.f_y = 3.0 * 10**6  # Hzfield_type
         self.f_z = 0.2 * 10**6  # Hz
-        self.field_type = 2
+        self.field_type = 1
         if self.field_type == 1:
             self.f_drive = 12.0 * 10**6
             self.u_ac = 500
