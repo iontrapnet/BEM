@@ -7,6 +7,15 @@ class simulation_parameters(object):
     def __init__(self):
 
         self.number_ions = 1
+        # ion parameters
+        self.atomic_unit = 1.6605402e-27
+        self.mass = 171 * 1.6605402e-27  # 171 amu in kg
+        # k =  U.e**2 / (4.0 * U.pi * U.eps0)
+        self.coulomb_coeff = 2.30707955552e-28
+        self.hbar = 1.05457266913e-34
+        self.transition_gamma = (1 / (7.1 * 10**-9))  # Gamma = 1 / Tau
+        self.wavelength = 369.5 * 10**-9
+        self.transition_k_mag = 2 * np.pi / self.wavelength
         # trap frequencies
         self.f_drive = 30.0 * 10**6  # Hz
         self.f_x = 4.0 * 10**6  # Hz
@@ -15,23 +24,14 @@ class simulation_parameters(object):
         self.field_type = 1
         if self.field_type == 1:
             self.f_drive = 12.0 * 10**6
-            self.u_ac = 500
+            self.u_ac = 200
             self.u_dc = 30
-            self.q_coeff = 1e2 * 1.6021766e-19
-            MFieldInit('..\\Model\\4rod\\167634622912717531',[-0.005,0.005,100],[-0.005,0.005,100],[2.095,2.105,100],'5d49bb9d6704e98ea598bb82a952b646')
+            self.q_coeff = 1.6021766e-19 * 10**2
+            MFieldInit('..\\Model\\4rod\\167634622912717531',[-5e-5,5e-5,100],[-5e-5,5e-5,100],[-5e-5,5e-5,100],'5d49bb9d6704e98ea598bb82a952b646')
         # simulation parameter
         self.damping = 0  # optional velocity damping, useful for finding equlibrium positions
-        self.simulation_duration = 0.002  # seconds
+        self.simulation_duration = 0.001  # seconds
         self.timestep = (1 / self.f_drive) / 100  # seconds
-        # ion parameters
-        self.atomic_unit = 1.6605402e-27
-        self.mass = 40 * 1.6605402e-27  # 40 amu in kg
-        # k =  U.e**2 / (4.0 * U.pi * U.eps0)
-        self.coulomb_coeff = 2.30707955552e-28
-        self.hbar = 1.05457266913e-34
-        self.transition_gamma = (1 / (7.1 * 10**-9))  # Gamma = 1 / Tau
-        self.wavelength = 397 * 10**-9
-        self.transition_k_mag = 2 * np.pi / (397 * 10**-9)
         # cooling laser
         self.cooling_on = False
         self.cooling_saturation = 0

@@ -6,9 +6,10 @@ import numpy as np
 from simulation_parameters import simulation_parameters
 from equilbrium_positions import equilibrium_positions as equil
 from matplotlib import pyplot
-import os
 
-#os.chdir(os.path.dirname(__file__))
+# import os
+# os.chdir(os.path.dirname(__file__))
+
 def dynamics_simulation(configuration):
     '''
     The function requires a parameter configuration, which is a list or numpy array
@@ -80,7 +81,7 @@ def dynamics_simulation(configuration):
         starting_positions[:, 2] = equil.get_positions(
             parameters.number_ions, parameters.f_z, parameters)
         starting_positions += (np.random.random(
-            (parameters.number_ions, 3)) - .5) * 1e-5
+            (parameters.number_ions, 3)) - .5) * 1e-6
         starting_velocities = np.zeros((parameters.number_ions, 3))
     elif type(configuration[0]) == type(1) and configuration[0] > 0:
         parameters.number_ions = configuration[0]
@@ -90,7 +91,7 @@ def dynamics_simulation(configuration):
         starting_positions[:, 2] = equil.get_positions(
             parameters.number_ions, parameters.f_z, parameters)
         starting_positions += (np.random.random(
-            (parameters.number_ions, 3)) - .5) * 1e-5
+            (parameters.number_ions, 3)) - .5) * 1e-6
         starting_velocities = np.zeros((parameters.number_ions, 3))
     elif len(configuration[0]) == 10:
         parameters.number_ions = configuration[0][0]
@@ -110,7 +111,7 @@ def dynamics_simulation(configuration):
         starting_positions[:, 2] = equil.get_positions(
             parameters.number_ions, parameters.f_z, parameters)
         starting_positions += (np.random.random(
-            (parameters.number_ions, 3)) - .5) * 1e-5
+            (parameters.number_ions, 3)) - .5) * 1e-6
         starting_velocities = np.zeros((parameters.number_ions, 3))
     elif len(configuration[0]) == 12:
         parameters.number_ions = configuration[0][0]
