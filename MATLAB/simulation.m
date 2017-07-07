@@ -4,7 +4,7 @@ path='..\\Model\\4rod\\167634622912717531';
 xr=[-0.005 0.005 100];
 yr=[-0.005 0.005 100];
 zr=[2.095 2.105 100];
-[cb,xr,yr,zr,pb]=FieldInit(path, xr, yr, zr);
+[pb,cb]=FieldInit(path, xr, yr, zr);
 %%%%%%%%%%%%%%%%%%%%%%%% Definition %%%%%%%%%%%%%%%%%%%%%%%%%
 e = 1.6021766e-19;
 m = 2.87363e-25;                         %Yb+¿Î◊”÷ ¡ø
@@ -39,7 +39,7 @@ pos_vel(:, 1) = ini;
 kt = zeros(6 * n_ions, 1);
 for count = 1:n_T
     %count
-    kt = Eulerfun((count - 1) * dt, pos_vel(:, count),cb,xr,yr,zr,pb);
+    kt = Eulerfun((count - 1) * dt, pos_vel(:, count), pb, cb);
     pos_vel(:, count + 1) = pos_vel(:, count) + dt * kt;
 end
     

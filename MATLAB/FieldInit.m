@@ -1,13 +1,11 @@
-function [cb,xr,yr,zr,pb] = FieldInit(path, varargin)
-    %global cb xr yr zr pb
-    cb = ChargeBasis(path);
-    if nargin == 4
+function [pb,cb] = FieldInit(path, varargin)
+    if nargin < 4
+        [cb,pb] = ChargeBasis(path);
+    else
         xr = varargin{1};
         yr = varargin{2};
         zr = varargin{3};
         pb = PotentialBasis(path, xr, yr, zr);
-    else
-        pb = 0;
+        cb = [xr;yr;zr];
     end
-    %ans = pb;
 end

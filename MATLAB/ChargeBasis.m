@@ -1,5 +1,4 @@
-function charge = ChargeBasis(path)
-    global triangles
+function [charge,triangles] = ChargeBasis(path)
     M=csvread([path '.csv']);
     non=M(1,1);
     noe=M(1,2);
@@ -49,7 +48,6 @@ function charge = ChargeBasis(path)
     A=[xn;yn;zn]';
     alpha=Malpha(triangles,A,len);
     charge=zeros(len,noe);
-    %parfor i=1:noe
     for i=1:noe
         chargep=alpha\V(:,i);
         charge(:,i)=chargep.*4.*pi;
