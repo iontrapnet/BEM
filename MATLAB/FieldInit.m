@@ -1,5 +1,5 @@
-function ans = FieldInit(path, varargin)
-    global cb xr yr zr pb
+function [cb,xr,yr,zr,pb] = FieldInit(path, varargin)
+    %global cb xr yr zr pb
     cb = ChargeBasis(path);
     if nargin == 4
         xr = varargin{1};
@@ -9,5 +9,5 @@ function ans = FieldInit(path, varargin)
     else
         pb = 0;
     end
-    ans = pb;
+    %ans = pb;
 end
