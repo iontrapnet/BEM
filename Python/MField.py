@@ -1,5 +1,4 @@
-import matlab.engine
-import itertools, os
+import os
 import numpy as np
 from scipy.io import loadmat
 
@@ -10,6 +9,7 @@ MSession = {}
 
 def MEngine(*args):
     if not MSession.get('eng', None):
+        import matlab.engine
         eng = matlab.engine.start_matlab(*args)
         eng.cd(os.path.join(os.path.dirname(__file__), '..', 'MATLAB'))
         MSession['eng'] = eng
@@ -20,9 +20,11 @@ def MFieldInit(path, xr, yr, zr, data=''):
     MSession['yr'] = yr
     MSession['zr'] = zr
     if not data:
+        import matlab.engine
         data = MEngine().DataHash(matlab.double(xr+yr+zr))
     matfile = os.path.join(os.path.dirname(__file__), path + '-' + data + '.mat')
     if not os.path.exists(matfile):
+        import matlab.engine
         MEngine().FieldInit(path,matlab.double(xr),matlab.double(yr),matlab.double(zr), nargout = 0)
     pb = loadmat(matfile)['pb']
     if pb.ndim == 2:
