@@ -1,7 +1,8 @@
-function fields = Field(voltages, points)
-    global triangles cb xr yr zr pb
+function fields = Field(voltages, points,cb,xr,yr,zr,pb)
+  %  global triangles cb xr yr zr pb
     voltages = voltages';
-    if pb == 0
+    if ndims(pb) <3
+        triangles=0;
         [~, ex, ey, ez] = Potential(triangles, cb*voltages, points);
         fields = [ex;ey;ez]';
     else
