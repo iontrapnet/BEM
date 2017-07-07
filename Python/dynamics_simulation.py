@@ -6,9 +6,10 @@ import numpy as np
 from simulation_parameters import simulation_parameters
 from equilbrium_positions import equilibrium_positions as equil
 from matplotlib import pyplot
-import os
 
-os.chdir(os.path.dirname(__file__))
+# import os
+# os.chdir(os.path.dirname(__file__))
+
 def dynamics_simulation(configuration):
     '''
     The function requires a parameter configuration, which is a list or numpy array
@@ -225,8 +226,8 @@ def dynamics_simulation(configuration):
 , label='z')
             pyplot.grid(True, which='both')
             pyplot.legend()
-            filename = os.path.join('..', "ion " + str(num + 1) + \
-                " in operation " + str(order) + ".png")
+            filename = "ion " + str(num + 1) + \
+                " in operation " + str(order) + ".png"
             pyplot.savefig(filename, dpi=100)
     pyplot.show()
     positions = np.array(positions)

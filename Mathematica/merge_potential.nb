@@ -1,0 +1,141 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 11.0' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       158,          7]
+NotebookDataLength[      3833,        133]
+NotebookOptionsPosition[      3071,        102]
+NotebookOutlinePosition[      3430,        118]
+CellTagsIndexPosition[      3387,        115]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"Needs", "@", "\"\<MATLink`\>\""}], ";"}]], "Input",
+ CellChangeTimes->{{3.7082664213279934`*^9, 3.7082664283132553`*^9}}],
+
+Cell[BoxData[
+ RowBox[{"OpenMATLAB", "[", "]"}]], "Input",
+ CellChangeTimes->{{3.7082664324881353`*^9, 3.708266434674162*^9}}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"MEvaluate", "[", 
+   RowBox[{"\"\<cd \>\"", "<>", 
+    RowBox[{"FileNameJoin", "@", 
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"NotebookDirectory", "[", "]"}], ",", "\"\<..\>\"", ",", 
+       "\"\<MATLAB\>\""}], "}"}]}]}], "]"}], ";"}]], "Input",
+ CellChangeTimes->{{3.708266458577295*^9, 3.7082664746236515`*^9}, {
+  3.7082940381854277`*^9, 3.7082940590804424`*^9}}],
+
+Cell[BoxData[
+ RowBox[{"MEvaluate", "[", "\"\<merge_potential\>\"", "]"}]], "Input",
+ CellChangeTimes->{{3.7082664761781807`*^9, 3.7082664804238014`*^9}, {
+  3.708293963281823*^9, 3.7082939663607235`*^9}}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"pbs", "=", 
+   RowBox[{"MGet", "[", "\"\<pbs\>\"", "]"}]}], ";"}]], "Input",
+ CellChangeTimes->{{3.708266484700155*^9, 3.7082664952933364`*^9}}],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"pbs", "//", "Dimensions"}]], "Input",
+ CellChangeTimes->{{3.7082664977300353`*^9, 3.7082664993764133`*^9}}],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{"4", ",", "1030301", ",", "6"}], "}"}]], "Output",
+ CellChangeTimes->{3.708266499649809*^9, 3.7082937511625185`*^9, 
+  3.7082940870624394`*^9}]
+}, Open  ]],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"pb", "=", 
+   RowBox[{"MGet", "[", "\"\<pb\>\"", "]"}]}], ";"}]], "Input",
+ CellChangeTimes->{{3.708266541031498*^9, 3.708266545900885*^9}}],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"pb", "//", "Dimensions"}]], "Input",
+ CellChangeTimes->{{3.7082665483083572`*^9, 3.7082665501286774`*^9}}],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{"4", ",", "1030301", ",", "6"}], "}"}]], "Output",
+ CellChangeTimes->{3.70826655044258*^9, 3.7082937788889008`*^9, 
+  3.708294089482437*^9}]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"Chop", "[", 
+  RowBox[{
+   RowBox[{"Max", "@", 
+    RowBox[{"Abs", "[", 
+     RowBox[{"pbs", "-", "pb"}], "]"}]}], ",", 
+   SuperscriptBox["10", 
+    RowBox[{"-", "7"}]]}], "]"}]], "Input",
+ CellChangeTimes->{{3.7082665761782713`*^9, 3.708266665598386*^9}, {
+  3.7082937878468494`*^9, 3.708293832510804*^9}}],
+
+Cell[BoxData["0"], "Output",
+ CellChangeTimes->{{3.708266638384183*^9, 3.7082666701376915`*^9}, {
+   3.708293784321932*^9, 3.7082938331737947`*^9}, 3.708294090635434*^9}]
+}, Open  ]]
+},
+WindowSize->{759, 813},
+WindowMargins->{{276, Automatic}, {-179, Automatic}},
+FrontEndVersion->"11.0 for Microsoft Windows (64-bit) (2016\:5e747\:670828\
+\:65e5)",
+StyleDefinitions->"Default.nb"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[558, 20, 156, 3, 30, "Input"],
+Cell[717, 25, 126, 2, 30, "Input"],
+Cell[846, 29, 409, 10, 30, "Input"],
+Cell[1258, 41, 205, 3, 30, "Input"],
+Cell[1466, 46, 179, 4, 30, "Input"],
+Cell[CellGroupData[{
+Cell[1670, 54, 131, 2, 30, "Input"],
+Cell[1804, 58, 182, 4, 30, "Output"]
+}, Open  ]],
+Cell[2001, 65, 175, 4, 30, "Input"],
+Cell[CellGroupData[{
+Cell[2201, 73, 130, 2, 30, "Input"],
+Cell[2334, 77, 179, 4, 30, "Output"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[2550, 86, 332, 9, 33, "Input"],
+Cell[2885, 97, 170, 2, 30, "Output"]
+}, Open  ]]
+}
+]
+*)
+

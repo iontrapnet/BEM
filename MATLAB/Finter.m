@@ -1,6 +1,6 @@
 function [Fix, Fiy, Fiz] = Finter(x, y, z, q)
 [n, ~] = size(x);
-ke = 8.987551787 * 10^9;
+ke = 8.987551787e9;
 Fix = zeros(n, 1);
 Fiy = zeros(n, 1);
 Fiz = zeros(n, 1);

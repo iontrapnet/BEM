@@ -1,15 +1,20 @@
 import numpy as np
 from libc.math cimport sin, acos, cos, sqrt, M_PI, exp
+from MField import MField
 
 cdef class simulator(object):
 
     cdef int TOTAL_STEPS
     cdef int NUMBER_IONS
     cdef double TIMESTEP
+    cdef int FIELD_TYPE
     cdef double W_DRIVE
     cdef double W_X
     cdef double W_Y
     cdef double W_Z
+    cdef double U_AC
+    cdef double U_DC
+    cdef double Q_COEFF
     cdef double MASS
     cdef double COULOMB_COEFF
     cdef double VEL_DAMPING
@@ -32,7 +37,6 @@ cdef class simulator(object):
     cdef double[:] HEATING_LASER_CENTER
     cdef double HEATING_LASER_WAIST
     cdef int HEATING_LASER_PULSED
-    cdef int USE_HARMONIC_APPROXIMATION
 
     def __init__(self, parameters):
         p = parameters
@@ -67,7 +71,11 @@ cdef class simulator(object):
         self.HEATING_LASER_CENTER = p.heating_laser_center
         self.HEATING_LASER_PULSED = int(p.heating_laser_pulsed)
         # pseudo potential
-        self.USE_HARMONIC_APPROXIMATION = int(p.use_harmonic_approximation)
+        self.FIELD_TYPE = int(p.field_type)
+        if p.field_type == 1:
+            self.U_DC = p.u_dc
+            self.U_AC = p.u_ac
+            self.Q_COEFF = p.q_coeff
 
     cdef void calculate_acceleration(self, double[:, :] position, double[:, :] velocity, double[:, :] current_acceleration, double time, double[:, :] random_floats, char[:] excitation):
         '''
@@ -75,6 +83,7 @@ cdef class simulator(object):
         '''
         cdef int i = 0
         cdef int j = 0
+        cdef double u_ac
         cdef double dx, dy, dz, distance_sq
         cdef double Fx, Fy, Fz
         cdef double inst_detuning
@@ -86,18 +95,29 @@ cdef class simulator(object):
         cdef double r_y
         cdef double r_z
         cdef double distance_along_laser_sq
-        cdef double distance_perp_laser_sq
+        cdef double distance_perp_laser_sq     
         # acceleration due to the trap
-        for i in range(self.NUMBER_IONS):
-            if not self.USE_HARMONIC_APPROXIMATION:
+        if self.FIELD_TYPE == 1:
+            u_ac = self.U_AC * cos(self.W_DRIVE * time)
+            ve = [self.U_DC, u_ac, 0, u_ac, 0, self.U_DC]
+            acce = MField(ve, position, self.Q_COEFF / self.MASS)
+            for i in range(self.NUMBER_IONS):
+                current_acceleration[i, 0] = acce[i][0]
+                current_acceleration[i, 1] = acce[i][1]
+                current_acceleration[i, 2] = acce[i][2]
+        elif self.FIELD_TYPE == 2:
+            for i in range(self.NUMBER_IONS):
                 current_acceleration[i, 0] = ((1 / 2.) * (-self.W_X**2 + self.W_Y**2 + self.W_Z**2) - self.W_DRIVE * sqrt(
                     self.W_X**2 + self.W_Y**2 + self.W_Z**2) * cos(self.W_DRIVE * time)) * position[i, 0]
                 current_acceleration[i, 1] = ((1 / 2.) * (self.W_X**2 - self.W_Y**2 + self.W_Z**2) + self.W_DRIVE * sqrt(
                     self.W_X**2 + self.W_Y**2 + self.W_Z**2) * cos(self.W_DRIVE * time)) * position[i, 1]
-            else:
+                current_acceleration[i, 2] = - self.W_Z**2 * position[i, 2]
+        else:
+            for i in range(self.NUMBER_IONS):
                 current_acceleration[i, 0] = - self.W_X**2 * position[i, 0]
                 current_acceleration[i, 1] = - self.W_Y**2 * position[i, 1]
-            current_acceleration[i, 2] = - self.W_Z**2 * position[i, 2]
+                current_acceleration[i, 2] = - self.W_Z**2 * position[i, 2]
+            
         # acceleration due to the coulombic repulsion
         for i in range(self.NUMBER_IONS):
             for j in range(i + 1, self.NUMBER_IONS):

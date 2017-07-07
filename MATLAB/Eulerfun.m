@@ -1,6 +1,6 @@
 function dpv = Eulerfun(t, pos_vc)
-e = 1.6021766 * 10^-19;
-m = 2.87363 * 10^-25;                    %Yb+离子质量                 
+e = 1.6021766e-19;
+m = 2.87363e-25;                    %Yb+离子质量                 
 [nn, ~] = size(pos_vc);
 n = nn / 6;
 [FEx, FEy, FEz] = FEsim(pos_vc(1:n), pos_vc(n + 1:2 * n), pos_vc(2 * n + 1:3 * n), t, e);

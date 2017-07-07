@@ -1,39 +1,71 @@
 import matlab.engine
-
-# load BemSolver (32 bit dll)
-#from ctypes import *
-#import os
-#os.chdir(os.path.dirname(__file__))
-#os.chdir('../Lua')
-#print windll.BEM
+import itertools, os
+import numpy as np
+from scipy.io import loadmat
 
 PATH_SPHERE = '..\\Model\\sphere\\922019645250603132'
 PATH_4ROD = '..\\Model\\4rod\\167634622912717531'
 
-def MStart():
-	global eng
-	eng = matlab.engine.start_matlab()
-	eng.cd('../MATLAB')
+MSession = {}
 
-def MFieldInit(path, xr=[], yr=[], zr=[]):
-	global eng
-	if xr and yr and zr:
-		eng.FieldInit(path,matlab.double(xr),matlab.double(yr),matlab.double(zr),nargout=0)
-	else:
-		eng.FieldInit(path,nargout=0)
+def MEngine(*args):
+    if not MSession.get('eng', None):
+        eng = matlab.engine.start_matlab(*args)
+        eng.cd(os.path.join(os.path.dirname(__file__), '..', 'MATLAB'))
+        MSession['eng'] = eng
+    return MSession['eng']
 
-def MField(voltages, points, method='Calc'):
-	global eng
-	if method == 'Calc':
-		func = eng.FieldCalc
-	else:
-		func = eng.FieldInterp
-	return func(matlab.double(voltages), matlab.double(points))
+def MFieldInit(path, xr=[], yr=[], zr=[], data=''):
+    if xr and yr and zr:
+        MSession['xr'] = xr
+        MSession['yr'] = yr
+        MSession['zr'] = zr
+        if not data:
+            data = MEngine().DataHash(matlab.double(xr+yr+zr))
+        matfile = os.path.join(os.path.dirname(__file__), path + '-' + data + '.mat')
+        if not os.path.exists(matfile):
+            MEngine().FieldInit(path,matlab.double(xr),matlab.double(yr),matlab.double(zr))
+        pb = loadmat(matfile)['pb']
+        if pb.ndim == 2:
+            pb = pb.reshape(pb.shape[0],1,pb.shape[1])
+    else:
+        pb = MEngine().FieldInit(path)
+    MSession['pb'] = pb
+
+def MField(voltages, points, ratio=1):
+    pb = MSession['pb']
+    if np.ndim(pb) == 0:
+        return MEngine().Field(matlab.double(voltages), matlab.double(points))
+    else:
+        xr = MSession['xr']
+        yr = MSession['yr']
+        zr = MSession['zr']
+        nx = xr[2] + 1
+        ny = yr[2] + 1
+        nz = zr[2] + 1
+        r = []
+        for point in points:
+            dx = (nx-1)*(point[0]-xr[0])/(xr[1]-xr[0])
+            dy = (ny-1)*(point[1]-yr[0])/(yr[1]-yr[0])
+            dz = (nz-1)*(point[2]-zr[0])/(zr[1]-zr[0])
+            ix = int(dx)
+            iy = int(dy)
+            iz = int(dz)
+            dx -= ix
+            dy -= iy
+            dz -= iz
+            coe = [(1-dx)*(1-dy)*(1-dz),(1-dx)*(1-dy)*dz,(1-dx)*dy*(1-dz),(1-dx)*dy*dz,dx*(1-dy)*(1-dz),dx*(1-dy)*dz,dx*dy*(1-dz),dx*dy*dz]
+            idx = [iz+iy*nz+ix*ny*nz,1+iz+iy*nz+ix*ny*nz,iz+(1+iy)*nz+ix*ny*nz,1+iz+(1+iy)*nz+ix*ny*nz,iz+iy*nz+(1+ix)*ny*nz,1+iz+iy*nz+(1+ix)*ny*nz,iz+(1+iy)*nz+(1+ix)*ny*nz,1+iz+(1+iy)*nz+(1+ix)*ny*nz]
+            r.append(ratio*np.dot(np.dot(pb[1:, idx, :], voltages), coe))
+        return r
 
 if __name__ == '__main__':
-	MStart()
-	points = [[0,0,0],[0,-1,-2],[1,1,1]]
-	MFieldInit(PATH_SPHERE)
-	print MField([1],points)
-	MFieldInit(PATH_SPHERE,[-2,2,40],[-2,2,40],[-2,2,40])
-	print MField([1],points,method='Interp')
+    #points = [[0,0,0],[0,-1,-2],[1,1,1]]
+    #MFieldInit(PATH_SPHERE,[-2,2,40],[-2,2,40],[-2,2,40],'7a5fb13c63c4d748307ca9824e34bdd7')
+    #print MField([1],points)
+    #MFieldInit(PATH_SPHERE,[-2,2,40],[-2,2,40],[-2,2,40])
+    #print MField([1],points)
+    #MFieldInit(PATH_SPHERE)
+    #print MField([1],points)
+    MFieldInit(PATH_4ROD,[-0.005,0.005,100], [-0.005,0.005,100], [2.095,2.105,100], '5d49bb9d6704e98ea598bb82a952b646')
+    print MField([1,0,0,0,0,1],[[0,0,2.0999],[0,0,2.0101]])

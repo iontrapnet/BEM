@@ -1,0 +1,21 @@
+#PBS -S /bin/bash
+#PBS -N BEM{0}
+#PBS -l nodes=1:ppn=6
+#PBS -q score
+
+cd $PBS_O_WORKDIR
+
+export MATLABROOT=$HOME/matlab-2015
+export PATH=$MATLABROOT/bin:$PATH
+export LD_LIBRARY_PATH=$MATLABROOT/bin/glnxa64:$LD_LIBRARY_PATH
+export LD_LIBRARY_PATH=$MATLABROOT/sys/os/glnxa64:$LD_LIBRARY_PATH
+export LD_LIBRARY_PATH=$MATLABROOT/sys/java/jre/glnxa64/jre/lib/amd64/native_threads:$LD_LIBRARY_PATH
+export LD_LIBRARY_PATH=$MATLABROOT/sys/java/jre/glnxa64/jre/lib/amd64/server:$LD_LIBRARY_PATH
+export LD_LIBRARY_PATH=$MATLABROOT/sys/java/jre/glnxa64/jre/lib/amd64:$LD_LIBRARY_PATH
+export LD_LIBRARY_PATH=$MATLABROOT/X11/app-defaults:$LD_LIBRARY_PATH
+export OMP_NUM_THREADS=1
+export MKL_DYNAMIC=false
+export MKL_NUM_THREADS=1
+
+$HOME/matlab-2015/bin/matlab -singleCompThread -nodisplay -nosplash  < text{0}.m > text{0}.log
+
