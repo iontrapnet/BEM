@@ -72,24 +72,37 @@ local zr = {-5e-5,5e-5,100}
 FieldInit(PATH_4ROD,xr,yr,zr,'5d49bb9d6704e98ea598bb82a952b646')
 print(os.clock() - tic)
 
-local e = 1.6021766e-19
-local m = 2.87363e-25                        
-local n_ions = 1
-local Q_ion = 1 * e
+local e = 1.602176565e-19
+local m = 171 * 1.6605402e-27                       
+local field_coeff = 100 * e / m
+local Ke = 8.9875517873681e9                  --Coulomb constant
+local coulomb_coeff = e^2 * Ke / m
 local lam = 369.5e-9                          --cooling beam
-local kB = 1.38065e-23                        --Boltzmann constant
+local kB = 1.38064852e-23                     --Boltzmann constant
 local d0 = 500e-6
 local d1 = 1000e-6
 local r0 = ( d1 / math.sqrt(2) - d0 / 2)
 local v0 = (math.sqrt(2 * 500 * kB / 3 / m))*1e-30
 
+local u_dc = 100
+local u_ac = 500
+local w_drive = 2*math.pi*12e6
+local dc_z = 0.122321e4
+local w_z = (2 * dc_z * e * u_dc / m)^.5
+local gap_z = (e^2 * Ke / (w_z^2 * m))^(1/3)
+
+local n_ions = 5
+local disp = require ('display')
+local win = {}
 local r = {{}}
 local v = {{}}
 for i=1,n_ions do
+    local config = {title = 'Ion '..tostring(i), ylabel = 'Position (um)', labels = {"t (us)",'X','Y','Z'}}
+    win[i] = disp.plot({}, config)
     r[1][i] = {}
     r[1][i][1] = (2 * math.random() - 1) * r0 / 200
     r[1][i][2] = (2 * math.random() - 1) * r0 / 200
-    r[1][i][3] = (2 * math.random() - 1) * 5e-6 -- + (2*i - 3) * 17e-6
+    r[1][i][3] = (2 * math.random() - 1) * 2e-6 + (2*i - n_ions - 1) * gap_z / 2
     v[1][i] = {}
     v[1][i][1] = (2 * math.random() - 1) * v0
     v[1][i][2] = (2 * math.random() - 1) * v0
@@ -97,44 +110,75 @@ for i=1,n_ions do
 end
 
 tic = os.clock()
-local T_total = 5e-4                          --time of simulation
+local T_total = 1e-4                          --time of simulation
 local dt = 8e-10
 local n_T = math.floor(T_total / dt)
 local t = {}
 for k = 1,n_T do
     t[k] = dt * (k - 1)
-    local udc = 30
-    local uac = 500*math.cos(2*math.pi*12e6*t[k])
-    local voltages = {udc,uac,0,uac,0,udc}
-    local a = Field(voltages,r[k],Q_ion*100/m)
+    local u = u_ac*math.cos(w_drive*t[k])
+    local voltages = {u_dc,u,0,u,0,u_dc}
+    local a = Field(voltages,r[k],field_coeff)
     r[k+1] = {}
     v[k+1] = {}
     for i=1,n_ions do
         r[k+1][i] = {}
         v[k+1][i] = {}
+        for j=i+1,n_ions do
+            local dx = r[k][i][1] - r[k][j][1]
+            local dy = r[k][i][2] - r[k][j][2]
+            local dz = r[k][i][3] - r[k][j][3]
+            local dist = (dx^2 + dy^2 + dz^2)^1.5
+            --[[if dist == 0 then
+                print(k,i,j,dx,dy,dz)
+                return
+            end]]
+            dx = dx * coulomb_coeff / dist
+            dy = dy * coulomb_coeff / dist
+            dz = dz * coulomb_coeff / dist
+            a[i][1] = a[i][1] + dx
+            a[i][2] = a[i][2] + dy
+            a[i][3] = a[i][3] + dz
+            a[j][1] = a[j][1] - dx
+            a[j][2] = a[j][2] - dy
+            a[j][3] = a[j][3] - dz
+        end
         for j=1,3 do
             r[k+1][i][j] = r[k][i][j] + v[k][i][j] * dt
             v[k+1][i][j] = v[k][i][j] + a[i][j] * dt
         end
     end
+    --[[if math.mod(k,1e4) == 0 then
+        for i=1,n_ions do
+            local data = {}
+            for j=1,k do
+                data[j] = {1e6*t[j],1e6*r[j][i][1],1e6*r[j][i][2],1e6*r[j][i][3]} 
+            end
+            disp.plot(data, {win = win[i]})
+        end
+    end]]
+end
+print(os.clock() - tic)
+
+tic = os.clock()
+for i=1,n_ions do
+    local data = {}
+    for k=1,n_T do
+        data[k] = {1e6*t[k],1e6*r[k][i][1],1e6*r[k][i][2],1e6*r[k][i][3]} 
+    end
+    disp.plot(data, {win = win[i]})
 end
 print(os.clock() - tic)
 
 --[[local nplot = require 'nplot'
-local x = {}
-local y = {}
-local z = {}
-for k=1,n_T do
-    x[k] = r[k][1][1]
-    y[k] = r[k][1][2]
-    z[k] = r[k][1][3]
-end
-nplot(t,x,y,z)]]
-
-local disp = require ('display')
-local data = {}
-for k=1,n_T do
-    data[k] = {t[k],r[k][1][1],r[k][1][2],r[k][1][3]} 
-end
-local config = {title = 'Ion 1', labels = {"t",'X','Y','Z'}}
-disp.plot(data, config)
+for i=1,n_ions do
+    local x = {}
+    local y = {}
+    local z = {}
+    for k=1,n_T do
+        x[k] = r[k][1][1]
+        y[k] = r[k][1][2]
+        z[k] = r[k][1][3]
+    end
+    nplot(t,x,y,z)
+end]]
