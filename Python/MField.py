@@ -55,11 +55,17 @@ def MField(voltages, points, ratio=1):
         r.append(ratio*np.dot(np.dot(pb[1:, idx, :], voltages), coe))
     return r
 
+import time
+
 if __name__ == '__main__':
-    points = [[0,0,0],[0,-1,-2],[1,1,1]]
-    MFieldInit(PATH_SPHERE,[-2,2,40],[-2,2,40],[-2,2,40])
-    print MField([1],points)
+    #points = [[0,0,0],[0,-1,-2],[1,1,1]]
+    #MFieldInit(PATH_SPHERE,[-2,2,40],[-2,2,40],[-2,2,40])
+    #print MField([1],points)
     #MFieldInit(PATH_SPHERE,[-2,2,40],[-2,2,40],[-2,2,40],'7a5fb13c63c4d748307ca9824e34bdd7')
     #print MField([1],points)
     MFieldInit(PATH_4ROD,[-0.005,0.005,100], [-0.005,0.005,100], [2.095,2.105,100], '5d49bb9d6704e98ea598bb82a952b646')
     print MField([1,0,0,0,0,1],[[0,0,2.0999],[0,0,2.0101]])
+    #t = time.time()
+    #for i in xrange(100000):
+    #    MField([1,0,0,0,0,1],[[0,0,2.0999],[0,0,2.0101]])
+    #print time.time() - t

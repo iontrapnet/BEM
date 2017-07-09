@@ -264,6 +264,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\calcD3triangle.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\dxf\dl_dxf.cpp"
 				>
 			</File>
@@ -287,6 +291,10 @@
 			>
 			<File
 				RelativePath=".\bem.h"
+				>
+			</File>
+			<File
+				RelativePath=".\calcD3triangle.h"
 				>
 			</File>
 		</Filter>
