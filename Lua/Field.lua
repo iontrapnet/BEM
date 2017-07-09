@@ -120,8 +120,7 @@ for k = 1,n_T do
 end
 print(os.clock() - tic)
 
-local nplot = require 'nplot'
-
+--[[local nplot = require 'nplot'
 local x = {}
 local y = {}
 local z = {}
@@ -130,6 +129,12 @@ for k=1,n_T do
     y[k] = r[k][1][2]
     z[k] = r[k][1][3]
 end
-nplot(t,x,t,y,t,z)
+nplot(t,x,y,z)]]
 
-
+local disp = require ('display')
+local data = {}
+for k=1,n_T do
+    data[k] = {t[k],r[k][1][1],r[k][1][2],r[k][1][3]} 
+end
+local config = {title = 'Ion 1', labels = {"t",'X','Y','Z'}}
+disp.plot(data, config)

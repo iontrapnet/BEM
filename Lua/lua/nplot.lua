@@ -38,8 +38,8 @@ local function plot(...)
     s.Dock = DockStyle.Fill
     f.Controls:Add(s)
     local args = {...}
-    for i=1,#args/2 do
-        lineplot(s,args[2*i-1],args[2*i],i)
+    for i=2,#args do
+        lineplot(s,args[1],args[i],i-1)
     end
     local legend = Legend()
 	legend.VerticalEdgePlacement = Legend.Placement.Inside
