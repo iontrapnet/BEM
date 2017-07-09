@@ -31,7 +31,7 @@ function Field(voltages, points, ratio)
     local b0 = pb.dims[0]
     local b1 = b0 * pb.dims[1]
     local s2 = 1
-    if pb.rank > 2 then s2 = pb.dims[2] end
+    if pb.rank > 2 then s2 = tonumber(pb.dims[2]) end
     local nx = xr[3] + 1
     local ny = yr[3] + 1
     local nz = zr[3] + 1
@@ -79,19 +79,17 @@ local Ke = 8.9875517873681e9                  --Coulomb constant
 local coulomb_coeff = e^2 * Ke / m
 local lam = 369.5e-9                          --cooling beam
 local kB = 1.38064852e-23                     --Boltzmann constant
-local d0 = 500e-6
-local d1 = 1000e-6
-local r0 = ( d1 / math.sqrt(2) - d0 / 2)
-local v0 = (math.sqrt(2 * 500 * kB / 3 / m))*1e-30
 
 local u_dc = 100
-local u_ac = 500
-local w_drive = 2*math.pi*12e6
+local u_ac = 1000
+local f_rf = 12e6
+local w_rf = 2*math.pi*f_rf
 local dc_z = 0.122321e4
 local w_z = (2 * dc_z * e * u_dc / m)^.5
 local gap_z = (e^2 * Ke / (w_z^2 * m))^(1/3)
+local v0 = math.sqrt(2 * 500 * kB / 3 / m) * 1e-1
 
-local n_ions = 5
+local n_ions = 3
 local disp = require ('display')
 local win = {}
 local r = {{}}
@@ -100,8 +98,8 @@ for i=1,n_ions do
     local config = {title = 'Ion '..tostring(i), ylabel = 'Position (um)', labels = {"t (us)",'X','Y','Z'}}
     win[i] = disp.plot({}, config)
     r[1][i] = {}
-    r[1][i][1] = (2 * math.random() - 1) * r0 / 200
-    r[1][i][2] = (2 * math.random() - 1) * r0 / 200
+    r[1][i][1] = (2 * math.random() - 1) * 2e-6
+    r[1][i][2] = (2 * math.random() - 1) * 2e-6
     r[1][i][3] = (2 * math.random() - 1) * 2e-6 + (2*i - n_ions - 1) * gap_z / 2
     v[1][i] = {}
     v[1][i][1] = (2 * math.random() - 1) * v0
@@ -110,14 +108,15 @@ for i=1,n_ions do
 end
 
 tic = os.clock()
-local T_total = 1e-4                          --time of simulation
-local dt = 8e-10
+local T_total = 1e-3
+local dt = (1 / f_rf) / 100
 local n_T = math.floor(T_total / dt)
 local t = {}
 for k = 1,n_T do
     t[k] = dt * (k - 1)
-    local u = u_ac*math.cos(w_drive*t[k])
-    local voltages = {u_dc,u,0,u,0,u_dc}
+    local u1 = u_dc -- + 10*math.cos(w_rf*t[k])
+    local u2 = u_ac*math.cos(w_rf*t[k])
+    local voltages = {u1,u2,0,u2,0,u1}
     local a = Field(voltages,r[k],field_coeff)
     r[k+1] = {}
     v[k+1] = {}
@@ -161,10 +160,17 @@ end
 print(os.clock() - tic)
 
 tic = os.clock()
+local num = 1e4
+local step = math.floor(n_T / num)
+if step < 1 then
+    num = n_T
+    step = 1
+end
 for i=1,n_ions do
     local data = {}
-    for k=1,n_T do
-        data[k] = {1e6*t[k],1e6*r[k][i][1],1e6*r[k][i][2],1e6*r[k][i][3]} 
+    for j=1,num do
+        local k = j*step
+        data[j] = {1e6*t[k],1e6*r[k][i][1],1e6*r[k][i][2],1e6*r[k][i][3]} 
     end
     disp.plot(data, {win = win[i]})
 end
