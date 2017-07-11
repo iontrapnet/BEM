@@ -1,4 +1,10 @@
-function [charge,triangles] = ChargeBasis(path)
+function [cb,triangles] = ChargeBasis(path)
+    file=[path '.mat'];
+    if exist(file,'file')==2
+        load(file);
+        return;
+    end
+    
     M=csvread([path '.csv']);
     non=M(1,1);
     noe=M(1,2);
@@ -39,18 +45,13 @@ function [charge,triangles] = ChargeBasis(path)
         triangles(:,:,j)=[[x(node1(j)),y(node1(j)),z(node1(j))];[x(node2(j)),y(node2(j)),z(node2(j))];[x(node3(j)),y(node3(j)),z(node3(j))]];
     end
 
-    file=[path '.mat'];
-    if exist(file,'file')==2
-        load(file);
-        return;
-    end
-
     A=[xn;yn;zn]';
     alpha=Malpha(triangles,A,len);
-    charge=zeros(len,noe);
+    cb=zeros(len,noe);
     for i=1:noe
         chargep=alpha\V(:,i);
-        charge(:,i)=chargep.*4.*pi;
+        cb(:,i)=chargep.*4.*pi;
     end
-    save(file,'charge');
+    
+    save(file,'cb','triangles');
 end

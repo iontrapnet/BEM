@@ -183,3 +183,18 @@ def int_green3d_tri(Pglo, V):
     Igrad = np.array((np.mat([dx,dy,dz]).T*np.mat(Igradloc)).transpose())
     
     return I1, Igrad
+
+if __name__ == '__main__':
+    import time
+    V = [[0,0,0],
+         [3,0,0],
+         [0,3,0]]
+    Pglo = [[1,1,0],
+           [-3,3,0],
+           [2,0,2],
+           [-4,1,0],
+           [0,0,1]]
+    tic = time.time()
+    for i in xrange(10000):
+        I1, Igrad = int_green3d_tri(Pglo,V)
+    print(time.time() - tic)

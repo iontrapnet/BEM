@@ -163,3 +163,30 @@ int main(int argc, char* argv[]) {
 	del_world(wr);
 	return 0;
 }
+
+API void triangle_potential(double* triangle, int n, double* x, double* y, double* z, double* pot) {
+	for (int i = 0; i < n; ++i)
+		pot[i] = calc.G3Danalytic(x[i],y[i],z[i],triangle[0],triangle[1],triangle[2],triangle[3],triangle[4],triangle[5],triangle[6],triangle[7],triangle[8],false);
+}
+
+API void triangles_potential(int m, double* triangles, double* charges, int n, double* x, double* y, double* z, double* pot) {
+	memset(pot, 0, n * sizeof(double));
+	for (int k = 0; k < m; ++k) {
+		double* triangle = triangles + 9*k;
+		calc.G3Danalytic(n,x,y,z,triangle[0],triangle[1],triangle[2],triangle[3],triangle[4],triangle[5],triangle[6],triangle[7],triangle[8],charges[k],pot);
+	}
+}
+
+API void triangle_potential_field(double* triangle, int n, double* x, double* y, double* z, double* potf) {
+    for (int i = 0; i < n; ++i)
+        calc.triangleint_pot_exyz(x[i],y[i],z[i],triangle[0],triangle[1],triangle[2],triangle[3],triangle[4],triangle[5],triangle[6],triangle[7],triangle[8],false,potf[4*i],potf[4*i+1],potf[4*i+2],potf[4*i+3]);
+}
+
+API void triangles_potential_field(int m, double* triangles, double* charges, int n, double* x, double* y, double* z, double* potf) {
+	memset(potf, 0, 4 * n * sizeof(double));
+	for (int k = 0; k < m; ++k) {
+		double* triangle = triangles + 9*k;
+		calc.triangleint_pot_exyz(n,x,y,z,triangle[0],triangle[1],triangle[2],triangle[3],triangle[4],triangle[5],triangle[6],triangle[7],triangle[8],charges[k],potf);
+	}
+}
+

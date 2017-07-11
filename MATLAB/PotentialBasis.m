@@ -9,9 +9,8 @@ function pb=PotentialBasis(path, xr, yr, zr)
     nop=[numel(x) 1];
     points=[reshape(x,nop) reshape(y,nop) reshape(z,nop)];
     noe=size(cb,2);
-    ve=eye(noe);
     parfor k=1:noe
-        [pot,fx,fy,fz]=Potential(triangles,cb*ve(:,k),points);
+        [pot,fx,fy,fz]=Potential(triangles,cb(:,k),points);
         pb(:,:,k)=[pot;fx;fy;fz];
     end
     save(file,'pb');

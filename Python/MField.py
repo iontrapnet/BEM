@@ -1,9 +1,12 @@
 import os
 import numpy as np
 from scipy.io import loadmat
+import struct
+from hashlib import md5
 
 PATH_SPHERE = '..\\Model\\sphere\\922019645250603132'
 PATH_4ROD = '..\\Model\\4rod\\167634622912717531'
+PATH_SURFACE = '..\\Model\\surface\\6157822360140778246'
 
 MSession = {}
 
@@ -15,13 +18,18 @@ def MEngine(*args):
         MSession['eng'] = eng
     return MSession['eng']
 
+def DataHash(xr,yr,zr):
+    m = md5()
+    m.update('double'+struct.pack('ddd',2,1,9))
+    m.update(''.join([struct.pack('d',i) for i in xr+yr+zr]))
+    return m.hexdigest()
+
 def MFieldInit(path, xr, yr, zr, data=''):
     MSession['xr'] = xr
     MSession['yr'] = yr
     MSession['zr'] = zr
     if not data:
-        import matlab.engine
-        data = MEngine().DataHash(matlab.double(xr+yr+zr))
+        data = DataHash(xr,yr,zr)
     matfile = os.path.join(os.path.dirname(__file__), path + '-' + data + '.mat')
     if not os.path.exists(matfile):
         import matlab.engine
@@ -58,12 +66,10 @@ def MField(voltages, points, ratio=1):
 import time
 
 if __name__ == '__main__':
-    #points = [[0,0,0],[0,-1,-2],[1,1,1]]
-    #MFieldInit(PATH_SPHERE,[-2,2,40],[-2,2,40],[-2,2,40])
-    #print MField([1],points)
-    #MFieldInit(PATH_SPHERE,[-2,2,40],[-2,2,40],[-2,2,40],'7a5fb13c63c4d748307ca9824e34bdd7')
-    #print MField([1],points)
-    MFieldInit(PATH_4ROD,[-0.005,0.005,100], [-0.005,0.005,100], [2.095,2.105,100], '5d49bb9d6704e98ea598bb82a952b646')
+    points = [[0,0,0],[0,-1,-2],[1,1,1]]
+    MFieldInit(PATH_SPHERE,[-2,2,40],[-2,2,40],[-2,2,40])
+    print MField([1],points)
+    MFieldInit(PATH_4ROD,[-0.005,0.005,100], [-0.005,0.005,100], [2.095,2.105,100])
     print MField([1,0,0,0,0,1],[[0,0,2.0999],[0,0,2.0101]])
     #t = time.time()
     #for i in xrange(100000):

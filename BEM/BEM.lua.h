@@ -11,3 +11,7 @@ void region_slow(D3world* wr, double x0, double x1, int nx, double y0, double y1
 double point(D3world* wr, double x, double y, double z);
 double point_slow(D3world* wr, double x, double y, double z);
 int bem_main(int argc, char* argv[]);
+void triangle_potential(double* triangle, int n, double* x, double* y, double* z, double* pot);
+void triangles_potential(int m, double* triangles, double* charges, int n, double* x, double* y, double* z, double* pot);
+void triangle_potential_field(double* triangle, int n, double* x, double* y, double* z, double* potf);
+void triangles_potential_field(int m, double* triangles, double* charges, int n, double* x, double* y, double* z, double* potf);

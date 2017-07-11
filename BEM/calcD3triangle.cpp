@@ -1,5 +1,6 @@
 #include "calcD3triangle.h"
 #include <cmath>
+#include <cstring>
 
 double asin_safe(double val){
 	if (val>1.) return M_PI/2.;
@@ -233,6 +234,49 @@ void calcD3triangle::triangleint_pot_exyz(double x0,double y0,double z0,double x
 //		ey=-ey;
 //		ez=-ez;
 //	}
+}
+
+void calcD3triangle::triangleint_pot_exyz(int N,double* x0,double* y0,double* z0,double x1,double y1,double z1,double x2,double y2,double z2,double x3,double y3,double z3,double q,double* potf){
+	double hs=q*sqrt(sqr(x2*y1 - x3*y1 - x1*y2 + x3*y2 + x1*y3 - x2*y3) + sqr(x2*z1 - x3*z1 - x1*z2 + x3*z2 + x1*z3 - x2*z3) + sqr(y2*z1 - y3*z1 - y1*z2 + y3*z2 + y1*z3 - y2*z3));
+	
+	for (int k = 0; k < N; ++k) {
+		double pot=0, ex=0, ey=0, ez=0;
+        for(int i=0;i<n;i++){
+            double zeta,eta2,xi2;
+                
+            eta2=eta[i];
+            xi2=xi[i];
+            zeta=1-xi2-eta2;
+
+            double xq=x1*zeta+x2*xi2+x3*eta2-x0[k];
+            double yq=y1*zeta+y2*xi2+y3*eta2-y0[k];
+            double zq=z1*zeta+z2*xi2+z3*eta2-z0[k];
+
+            double sqr_xq=sqr(xq);
+            double sqr_yq=sqr(yq);
+            double sqr_zq=sqr(zq);
+            
+            double oneover_sqrt_all=1./sqrt(sqr_xq+sqr_yq+sqr_zq);
+            double oneover_sqrt_all_3=oneover_sqrt_all*oneover_sqrt_all*oneover_sqrt_all*w[i];
+            oneover_sqrt_all*=w[i];
+
+            pot+=oneover_sqrt_all;//speedup idea put pot in array of sizeof(w) and ausklammere w[i]
+
+            ex+=(xq)*oneover_sqrt_all_3;
+            ey+=(yq)*oneover_sqrt_all_3;
+            ez+=(zq)*oneover_sqrt_all_3;
+
+        }
+        pot*=hs;
+        ex*=hs;
+        ey*=hs;
+        ez*=hs;
+
+		potf[4*k] += pot;
+		potf[4*k+1] += ex;
+		potf[4*k+2] += ey;
+		potf[4*k+3] += ez;
+	}
 }
 
 /*
@@ -537,8 +581,113 @@ double calcD3triangle::G3Danalytic(double xp,double yp,double zp,double x1,doubl
 		Trianglei12=onplane?GetIntL1(xp,yp,zp,x1,y1,z1,x2,y2,z2):GetIntL1OutOfPlane(xp,yp,zp,x1,y1,z1,x2,y2,z2,rp);
 	}
 	return (n1*Trianglei23+n2*Trianglei13+n3*Trianglei12);
+}
 
+void calcD3triangle::G3Danalytic(int N,double* x0,double* y0,double* z0,double x1,double y1,double z1,double x2,double y2,double z2,double x3,double y3,double z3,double q,double* pot){
+	//first find out if the point of evaluation is in the plane of the triangle or outside the plane
+	//therefore calculate norm of triangle
+//undokument if numerical sollution should be enforced
+	//return calc.triangleint(calcD3triangle::G3D,xp,yp,zp,x1,y1,z1,x2,y2,z2,x3,y3,z3);
+
+	double px,py,pz,ax,ay,az,bx,by,bz,cx,cy,cz,nx,ny,nz,n;
+	double a,b,c,psi,cospsi,sinpsi;
+
+	ax=x3-x1;ay=y3-y1;az=z3-z1;
+	bx=x2-x1;by=y2-y1;bz=z2-z1;
+	cx=x3-x2;cy=y3-y2;cz=z3-z2;
+	a=sqrt(sqr(ax)+sqr(ay)+sqr(az));
+	b=sqrt(sqr(bx)+sqr(by)+sqr(bz));
+	c=sqrt(sqr(cx)+sqr(cy)+sqr(cz));
+	if(abs(a)<1e-13) return;
+	if(abs(b)<1e-13) return;
+	if(abs(c)<1e-13) return;
+	cospsi=(ax*bx+ay*by+az*bz)/(a*b);
+    if(1.-abs(cospsi)<1e-13) return;
+    sinpsi=sqrt(1.-sqr(cospsi));
+	psi=acos_safe(cospsi);
 	
+	for (int k = 0; k < N; ++k) {
+        double xp = x0[k], yp = y0[k], zp = z0[k];
+        px=-x1+xp;py=-y1+yp;pz=-z1+zp;
+        // b x a
+        nx=az*by - ay*bz;
+        ny=ax*bz - az*bx;
+        nz=ay*bx - ax*by;
+        n=sqrt(sqr(nx)+sqr(ny)+sqr(nz));
+        nx/=n;ny/=n;nz/=n;
+        double scalarprod=px*nx+py*ny+pz*nz;
+        bool onplane=(abs(scalarprod)<1e-13);
+        //if(!onplane) return calc.triangleint(calcD3triangle::G3D,xp,yp,zp,x1,y1,z1,x2,y2,z2,x3,y3,z3);
+        double rp=0;
+        if(!onplane){
+            rp=scalarprod;
+            xp=xp-rp*nx;
+            yp=yp-rp*ny;
+            zp=zp-rp*nz;
+            rp=abs(rp);
+        }
+        double Trianglei12;
+        double Trianglei23;
+        double Trianglei13;
+        
+        double ri1x=xp-x1,ri1y=yp-y1,ri1z=zp-z1;//definition different to paper Appl.Math.Moedel 1989_vol13_450
+        double ri1=sqrt(sqr(x1-xp)+sqr(y1-yp)+sqr(z1-zp));
+		if(abs(ri1)<1e-13) {
+			pot[k] += q*(onplane?GetIntL1(xp,yp,zp,x2,y2,z2,x3,y3,z3):GetIntL1OutOfPlane(xp,yp,zp,x2,y2,z2,x3,y3,z3,rp));
+			continue;
+		}
+        double cospsi_i=(ri1x*bx+ri1y*by+ri1z*bz)/(ri1*b);
+        if(cospsi_i>1) cospsi_i=1;
+        if(cospsi_i<-1) cospsi_i=-1;
+
+        double sinpsi_i=sqrt(1.-sqr(cospsi_i));
+        double psi_i=acos_safe(cospsi_i);
+        //negate psi_i if (b x a) . (  b x ri1)<=0
+        //n=b x a
+        double ri1xb_x=-(-(ri1z*by) + ri1y*bz);
+        double ri1xb_y=-(ri1z*bx - ri1x*bz);
+        double ri1xb_z=-(-(ri1y*bx) + ri1x*by);
+
+        double scalarprod2=ri1xb_x*nx+ri1xb_y*ny+ri1xb_z*nz;
+        if(scalarprod2<0.) {
+            psi_i=-psi_i;
+            sinpsi_i=-sinpsi_i;
+        }
+
+
+
+        double Ui=ri1*sin(psi-psi_i)/b/sinpsi;
+        double Vi=ri1*sinpsi_i/a/sinpsi;
+        double Wi=1.-Vi-Ui;
+        double n1,n2,n3;
+        if(abs(Wi)<1e-13) {
+            n1=0;
+            Trianglei23=0;
+        }
+        else{
+            n1=(Wi>=0)?1:-1;
+            Trianglei23=onplane?GetIntL1(xp,yp,zp,x2,y2,z2,x3,y3,z3):GetIntL1OutOfPlane(xp,yp,zp,x2,y2,z2,x3,y3,z3,rp);
+        }
+        
+        if(abs(Ui)<1e-13) {
+            n2=0;
+            Trianglei13=0;
+        }
+        else{
+            n2=(Ui>=0)?1:-1;
+            Trianglei13=onplane?GetIntL1(xp,yp,zp,x1,y1,z1,x3,y3,z3):GetIntL1OutOfPlane(xp,yp,zp,x1,y1,z1,x3,y3,z3,rp);
+        }
+
+        if(abs(Vi)<1e-13) {
+            n3=0;
+            Trianglei12=0;
+        }
+        else{
+            n3=(Vi>=0)?1:-1;
+            Trianglei12=onplane?GetIntL1(xp,yp,zp,x1,y1,z1,x2,y2,z2):GetIntL1OutOfPlane(xp,yp,zp,x1,y1,z1,x2,y2,z2,rp);
+        }
+        pot[k] += q*(n1*Trianglei23+n2*Trianglei13+n3*Trianglei12);
+    }
 }
 
 #ifdef CALCD3_TEST

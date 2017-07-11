@@ -24,8 +24,10 @@ public:
 	static double dG3Ddy(double x0,double y0,double z0,double x1,double y1,double z1);
 	static double dG3Ddz(double x0,double y0,double z0,double x1,double y1,double z1);
 	double G3Danalytic(double xp,double yp,double zp,double x1,double y1,double z1,double x2,double y2,double z2,double x3,double y3,double z3,bool inversenorm);
+	void G3Danalytic(int N,double* x0,double* y0,double* z0,double x1,double y1,double z1,double x2,double y2,double z2,double x3,double y3,double z3,double q,double* pot);
 	double G3DdnAnalytic(double xp,double yp,double zp,double x1,double y1,double z1,double x2,double y2,double z2,double x3,double y3,double z3,bool inversenorm);
 	void triangleint_pot_exyz(double x0,double y0,double z0,double x1,double y1,double z1,double x2,double y2,double z2,double x3,double y3,double z3,bool inversenorm,double &pot,double &ex,double &ey,double &ez);
+	void triangleint_pot_exyz(int N,double* x0,double* y0,double* z0,double x1,double y1,double z1,double x2,double y2,double z2,double x3,double y3,double z3,double q,double* potf);
 
 protected:
 	void gauleg(double x1, double x2, double x[], double w[], int n); //from nr c p152 c4-5.pdf

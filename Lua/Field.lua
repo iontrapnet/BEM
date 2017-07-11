@@ -1,15 +1,60 @@
 local ffi = require 'ffi'
 local mat = require 'matio.ffi'
+local md5 = require 'md5'
 
-local function loadmat(path, name)
+local function loadmat(path, ...)
     local f = mat.open(path, mat.ACC_RDONLY)
-    local r = mat.varRead(f, name)
+    local args = {...}
+    local r = {}
+    for _,name in ipairs(args) do
+        r[#r+1] = mat.varRead(f, name)
+    end
     mat.close(f)
-    return r
+    return unpack(r)
+end
+
+local function savemat(path, ...)
+    local f = mat.createVer(path, nil, mat.FT_MAT5)
+    local args = {...}
+    for _,arg in ipairs(args) do
+        local var = mat.varCreate(arg.name, mat.C_DOUBLE, mat.T_DOUBLE, arg.rank, arg.dims, arg.data, 0)
+        mat.varWrite(f, var, mat.COMPRESSION_ZLIB)
+        mat.varFree(var)
+    end
+    mat.close(f)
+end
+
+local function strcast(x)
+    if type(x) == 'number' then
+        return ffi.string(ffi.new('double[1]',x),8)
+    elseif type(x) == 'table' then
+        local r = ''
+        for _,v in ipairs(x) do
+            r = r..strcast(v)
+        end
+        return r
+    else
+        return tostring(x)
+    end
+end
+
+local function DataHash(xr,yr,zr)
+    local m = md5.new()
+    m:update(strcast({'double',2,1,9}))
+    m:update(strcast{xr[1],xr[2],xr[3],yr[1],yr[2],yr[3],zr[1],zr[2],zr[3]})
+    return md5.tohex(m:finish())
+end
+
+local function FileExists(path)
+  local file = io.open(path)
+  if file then
+    return file:close() and true
+  end
 end
 
 PATH_SPHERE = '..\\Model\\sphere\\922019645250603132'
 PATH_4ROD = '..\\Model\\4rod\\167634622912717531'
+PATH_SURFACE = '..\\Model\\surface\\6157822360140778246'
 
 local FieldSession = {}
 
@@ -17,8 +62,49 @@ function FieldInit(path, xr, yr, zr, data)
     FieldSession['xr'] = xr
     FieldSession['yr'] = yr
     FieldSession['zr'] = zr
+    local pb
+    if not data then
+        data = DataHash(xr,yr,zr)
+    end
     local matfile = path..'-'..data..'.mat'
-    FieldSession['pb'] = loadmat(matfile, 'pb')
+    if FileExists(matfile) then
+        pb = loadmat(matfile, 'pb')
+    else
+        local cb, triangles = loadmat(path..'.mat','cb','triangles')
+        local dx = (xr[2]-xr[1])/xr[3]
+        local dy = (yr[2]-yr[1])/yr[3]
+        local dz = (zr[2]-zr[1])/zr[3]
+        local nx = xr[3]+1
+        local ny = yr[3]+1
+        local nz = zr[3]+1
+        local n = nx*ny*nz
+        local ct = 'double['..n..']'
+        local x = ffi.new(ct)
+        local y = ffi.new(ct)
+        local z = ffi.new(ct)
+        for i=0,nx-1 do
+            for j=0,ny-1 do
+                for k=0,nz-1 do
+                    local idx = i*ny*nz+j*nz+k
+                    x[idx] = xr[1]+i*dx
+                    y[idx] = yr[1]+j*dy
+                    z[idx] = zr[1]+k*dz
+                end
+            end 
+        end
+        local cbdata = ffi.cast('double*', cb.data)
+        local pbdata = ffi.new('double['..4*n*cb.dims[1]..']')
+        local file = io.open('..\\BEM\\BEM.lua.h')
+        local bem = ffi.load('BEM')
+        ffi.cdef(file:read('*all'))
+        file:close()
+        for i=0,cb.dims[1]-1 do
+            bem.triangles_potential_field(cb.dims[0],triangles.data,cbdata+cb.dims[0]*i,n,x,y,z,pbdata+4*n*i)
+        end
+        pb = {name = 'pb', rank = 3, dims = ffi.new('int[3]',{4,n,cb.dims[1]}), data = pbdata}
+        savemat(matfile, pb)
+    end
+    FieldSession['pb'] = pb
 end
 
 function Field(voltages, points, ratio)
@@ -64,6 +150,13 @@ function Field(voltages, points, ratio)
     end
     return r
 end
+
+--[[local tic = os.clock()
+local xr = {-0.005,0.005,10}
+local yr = {-0.005,0.005,10}
+local zr = {2.095,2.105,10}
+FieldInit(PATH_4ROD,xr,yr,zr)
+print(os.clock() - tic)]]
 
 local tic = os.clock()
 local xr = {-5e-5,5e-5,100}
@@ -114,7 +207,7 @@ local n_T = math.floor(T_total / dt)
 local t = {}
 for k = 1,n_T do
     t[k] = dt * (k - 1)
-    local u1 = u_dc -- + 10*math.cos(w_rf*t[k])
+    local u1 = u_dc + 10*math.cos(w_rf*t[k])
     local u2 = u_ac*math.cos(w_rf*t[k])
     local voltages = {u1,u2,0,u2,0,u1}
     local a = Field(voltages,r[k],field_coeff)

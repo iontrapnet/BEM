@@ -1,5 +1,15 @@
 LIBRARY BEM.dll
+
 EXPORTS
+X0
+X1
+Xn
+Y0
+Y1
+Yn
+Z0
+Z1
+Zn
 bem_main
 del_world
 load_csv
@@ -10,3 +20,7 @@ point_slow
 region
 region_slow
 solve
+triangle_potential
+triangles_potential
+triangle_potential_field
+triangles_potential_field
