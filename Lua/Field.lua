@@ -52,11 +52,28 @@ local function FileExists(path)
   end
 end
 
+local function curdir()
+    return io.popen'cd':read'*l'
+end
+
 PATH_SPHERE = '..\\Model\\sphere\\922019645250603132'
 PATH_4ROD = '..\\Model\\4rod\\167634622912717531'
 PATH_SURFACE = '..\\Model\\surface\\6157822360140778246'
 
 local FieldSession = {}
+
+local function MEngine()
+    local m = FieldSession['eng']
+    if not m then
+        local com = require 'com'
+        --m = com.CreateObject('matlab.application')
+        local MLApp = CLRPackage('MLApp', 'MLApp')
+        m = MLApp.MLAppClass()
+        m:Execute('cd '..curdir()..'\\..\\MATLAB')
+        FieldSession['eng'] = m
+    end
+    return m
+end
 
 function FieldInit(path, xr, yr, zr, data)
     FieldSession['xr'] = xr
@@ -70,6 +87,9 @@ function FieldInit(path, xr, yr, zr, data)
     if FileExists(matfile) then
         pb = loadmat(matfile, 'pb')
     else
+        if not FileExists(path..'.mat') then
+            local err, ret = MEngine():Feval('ChargeBasis',0,path)
+        end
         local cb, triangles = loadmat(path..'.mat','cb','triangles')
         local dx = (xr[2]-xr[1])/xr[3]
         local dy = (yr[2]-yr[1])/yr[3]
@@ -152,11 +172,9 @@ function Field(voltages, points, ratio)
 end
 
 --[[local tic = os.clock()
-local xr = {-0.005,0.005,10}
-local yr = {-0.005,0.005,10}
-local zr = {2.095,2.105,10}
-FieldInit(PATH_4ROD,xr,yr,zr)
-print(os.clock() - tic)]]
+FieldInit(PATH_SPHERE,{-2,2,10},{-2,2,10},{-2,2,10})
+print(os.clock() - tic)
+os.exit()]]
 
 local tic = os.clock()
 local xr = {-5e-5,5e-5,100}
@@ -221,10 +239,6 @@ for k = 1,n_T do
             local dy = r[k][i][2] - r[k][j][2]
             local dz = r[k][i][3] - r[k][j][3]
             local dist = (dx^2 + dy^2 + dz^2)^1.5
-            --[[if dist == 0 then
-                print(k,i,j,dx,dy,dz)
-                return
-            end]]
             dx = dx * coulomb_coeff / dist
             dy = dy * coulomb_coeff / dist
             dz = dz * coulomb_coeff / dist
@@ -240,15 +254,6 @@ for k = 1,n_T do
             v[k+1][i][j] = v[k][i][j] + a[i][j] * dt
         end
     end
-    --[[if math.mod(k,1e4) == 0 then
-        for i=1,n_ions do
-            local data = {}
-            for j=1,k do
-                data[j] = {1e6*t[j],1e6*r[j][i][1],1e6*r[j][i][2],1e6*r[j][i][3]} 
-            end
-            disp.plot(data, {win = win[i]})
-        end
-    end]]
 end
 print(os.clock() - tic)
 
@@ -266,18 +271,17 @@ for i=1,n_ions do
         data[j] = {1e6*t[k],1e6*r[k][i][1],1e6*r[k][i][2],1e6*r[k][i][3]} 
     end
     disp.plot(data, {win = win[i]})
+    --[[local ts = {}
+    local xs = {}
+    local ys = {}
+    local zs = {}
+    for j=1,num do
+        local k = j*step
+        ts[j] = 1e6*t[k]
+        xs[j] = 1e6*r[k][i][1]
+        ys[j] = 1e6*r[k][i][2]
+        zs[j] = 1e6*r[k][i][3]
+    end
+    require('nplot')(ts,xs,ys,zs)]]
 end
 print(os.clock() - tic)
-
---[[local nplot = require 'nplot'
-for i=1,n_ions do
-    local x = {}
-    local y = {}
-    local z = {}
-    for k=1,n_T do
-        x[k] = r[k][1][1]
-        y[k] = r[k][1][2]
-        z[k] = r[k][1][3]
-    end
-    nplot(t,x,y,z)
-end]]
