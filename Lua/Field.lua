@@ -200,14 +200,23 @@ local w_z = (2 * dc_z * e * u_dc / m)^.5
 local gap_z = (e^2 * Ke / (w_z^2 * m))^(1/3)
 local v0 = math.sqrt(2 * 500 * kB / 3 / m) * 1e-1
 
-local n_ions = 3
+local T_total = 5e-4
+local dt = (1 / f_rf) / 1000
+local n_T = math.floor(T_total / dt)
+local step = math.floor(n_T / 1e4)
+if step < 1 then step = 1 end
+
+local n_ions = 5
+
 local disp = require ('display')
 local win = {}
-local r = {{}}
-local v = {{}}
+local plt = {}
+local r = {{},{}}
+local v = {{},{}}
 for i=1,n_ions do
     local config = {title = 'Ion '..tostring(i), ylabel = 'Position (um)', labels = {"t (us)",'X','Y','Z'}}
     win[i] = disp.plot({}, config)
+    plt[i] = {}
     r[1][i] = {}
     r[1][i][1] = (2 * math.random() - 1) * 2e-6
     r[1][i][2] = (2 * math.random() - 1) * 2e-6
@@ -219,25 +228,27 @@ for i=1,n_ions do
 end
 
 tic = os.clock()
-local T_total = 1e-3
-local dt = (1 / f_rf) / 100
-local n_T = math.floor(T_total / dt)
-local t = {}
 for k = 1,n_T do
-    t[k] = dt * (k - 1)
-    local u1 = u_dc + 10*math.cos(w_rf*t[k])
-    local u2 = u_ac*math.cos(w_rf*t[k])
+    local t = dt * (k - 1)
+    local k1 = (k - 1) % 2 + 1
+    if (k - 1) % step == 0 then
+        local j = (k - 1)/step + 1
+        for i=1,n_ions do
+            plt[i][j] = {1e6*t,1e6*r[k1][i][1],1e6*r[k1][i][2],1e6*r[k1][i][3]}          
+        end
+    end
+    local u1 = u_dc + 0*math.cos(w_rf*t)
+    local u2 = u_ac*math.cos(w_rf*t)
     local voltages = {u1,u2,0,u2,0,u1}
-    local a = Field(voltages,r[k],field_coeff)
-    r[k+1] = {}
-    v[k+1] = {}
+    local a = Field(voltages,r[k1],field_coeff)
+    local k2 = k % 2 + 1
     for i=1,n_ions do
-        r[k+1][i] = {}
-        v[k+1][i] = {}
+        r[k2][i] = {}
+        v[k2][i] = {}
         for j=i+1,n_ions do
-            local dx = r[k][i][1] - r[k][j][1]
-            local dy = r[k][i][2] - r[k][j][2]
-            local dz = r[k][i][3] - r[k][j][3]
+            local dx = r[k1][i][1] - r[k1][j][1]
+            local dy = r[k1][i][2] - r[k1][j][2]
+            local dz = r[k1][i][3] - r[k1][j][3]
             local dist = (dx^2 + dy^2 + dz^2)^1.5
             dx = dx * coulomb_coeff / dist
             dy = dy * coulomb_coeff / dist
@@ -250,38 +261,15 @@ for k = 1,n_T do
             a[j][3] = a[j][3] - dz
         end
         for j=1,3 do
-            r[k+1][i][j] = r[k][i][j] + v[k][i][j] * dt
-            v[k+1][i][j] = v[k][i][j] + a[i][j] * dt
+            r[k2][i][j] = r[k1][i][j] + v[k1][i][j] * dt
+            v[k2][i][j] = v[k1][i][j] + a[i][j] * dt
         end
-    end
+    end 
 end
 print(os.clock() - tic)
 
 tic = os.clock()
-local num = 1e4
-local step = math.floor(n_T / num)
-if step < 1 then
-    num = n_T
-    step = 1
-end
 for i=1,n_ions do
-    local data = {}
-    for j=1,num do
-        local k = j*step
-        data[j] = {1e6*t[k],1e6*r[k][i][1],1e6*r[k][i][2],1e6*r[k][i][3]} 
-    end
-    disp.plot(data, {win = win[i]})
-    --[[local ts = {}
-    local xs = {}
-    local ys = {}
-    local zs = {}
-    for j=1,num do
-        local k = j*step
-        ts[j] = 1e6*t[k]
-        xs[j] = 1e6*r[k][i][1]
-        ys[j] = 1e6*r[k][i][2]
-        zs[j] = 1e6*r[k][i][3]
-    end
-    require('nplot')(ts,xs,ys,zs)]]
+    disp.plot(plt[i], {win = win[i]})
 end
 print(os.clock() - tic)
